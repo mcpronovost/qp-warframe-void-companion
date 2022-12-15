@@ -13,4 +13,10 @@ dist/
 build/
 *.egg-info/
 
+*.log
+*.pot
 *.sqlite3
+media
+
+*.bak
+.env
