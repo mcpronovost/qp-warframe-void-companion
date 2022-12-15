@@ -1,0 +1,5 @@
+__title__ = "qpFrame"
+__version__ = "0.1.0"
+__author__ = "M-C Pronovost"
+__license__ = "UNLICENSED"
+__copyright__ = "Copyright 2022 M-C Pronovost"
