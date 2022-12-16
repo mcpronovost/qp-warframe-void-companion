@@ -1,0 +1,6 @@
+*.pyc
+*.pyo
+/.env
+/static_collected
+/node_modules
+/venv

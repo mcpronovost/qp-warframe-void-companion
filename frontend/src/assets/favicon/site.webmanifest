@@ -1,0 +1,23 @@
+{
+    "name": "qpFrame",
+    "short_name": "qpFrame",
+    "description": "Manage your Warframe relics and more.",
+    "start_url": "http://localhost:8000/",
+    "scope": "http://localhost:8000/",
+    "icons": [
+        {
+            "src": "http://localhost:8000/static/favicon/android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "http://localhost:8000/static/favicon/android-chrome-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "#89a411",
+    "background_color": "#1c1c1d",
+    "orientation": "landscape",
+    "display": "standalone"
+}

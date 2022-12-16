@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static qp_warframe_tags %}
+
+{% block "content" %}
+<section class="qp-warframes">
+  <ul class="qp-warframes-list">
+    {% for warframe in warframes %}
+      {% get_warframe_completion warframe as completion %}
+      <li class="qp-warframes-item">
+        <div class="qp-warframes-item-wrapper">
+          <div class="qp-warframes-image" style="background-image:url('https://raw.githubusercontent.com/WFCD/warframe-items/master/data/img/{{ warframe.image_name }}')";></div>
+          <div class="qp-warframes-name">
+            <span>{{ warframe.name }}</span>
+          </div>
+          {% if completion == 100 %}
+            <div class="qp-warframe-complete"></div>
+          {% endif %}
+          <div class="qp-warframe-completion">
+            <div class="qp-warframe-completed" style="width:{{ completion }}%;"></div>
+          </div>
+          <div class="qp-warframes-components">
+            {% for component in warframe.components.all %}
+              <div>
+                <img src="{% static 'img/'|add:component.name|add:'.png' %}" alt="" style="width:32px" />
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

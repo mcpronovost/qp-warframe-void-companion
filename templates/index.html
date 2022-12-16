@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block "content" %}
+<div>
+  contenu
+  <ul>
+    {% for relic in relics %}
+      {% if relic.state == "Intact" %}
+        <li>
+          <strong>{{ relic.tier }} {{ relic.relicName }}</strong>
+          <ul>
+            {% for reward in relic.rewards %}
+              <li>
+                <div>{{ reward.itemName }}</div>
+                <small style="display:block">{{ reward }}</small>
+              </li>
+            {% endfor %}
+          </ul>
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

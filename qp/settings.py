@@ -37,7 +37,9 @@ INSTALLED_APPS = [
     "corsheaders", # https://github.com/adamchainz/django-cors-headers
     "ordered_model", # https://github.com/django-ordered-model/django-ordered-model
     # ===---
-    # "qp.arc",
+    "qp.users",
+    "qp.warframe",
+    "qp.companion",
     # ===---
     "django_cleanup" # last | https://github.com/un1t/django-cleanup
 ]
@@ -183,7 +185,7 @@ DEFAULT_TO_EMAIL = "info@qpframe.ca"
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-WHITENOISE_KEEP_ONLY_HASHED_FILES = True
+WHITENOISE_KEEP_ONLY_HASHED_FILES = False
 
 STATIC_URL = "static/"
 
