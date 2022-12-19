@@ -13,5 +13,5 @@ urlpatterns = [
 ] + static(STATIC_URL, document_root=STATIC_ROOT) + static(MEDIA_URL, document_root=MEDIA_ROOT) + [
     re_path(r"^app/", app),
     re_path(r"^warframes/", warframes),
-    re_path(r"^", index)
+    re_path(r"^", app)
 ]
