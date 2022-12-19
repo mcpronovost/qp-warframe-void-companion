@@ -1,34 +1,47 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import imgvite from "./assets/vue.svg";
-import { qpunit } from "@mcpronovost/qpfilters";
+<script setup lang="ts">
+import { computed, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import QpAppbar from "@/components/core/AppSystembar.vue";
+import QpTopbar from "@/components/core/AppTopbar.vue";
+
+const route = useRoute()
+
+const routeName = computed<string|null>(() => {
+  return (route?.name?.toString() || null)
+})
+
+const setVH = () => {
+  let vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty("--vh", `${vh}px`);
+}
+
+onMounted(() => {
+  setVH()
+  addEventListener("resize", () => {
+    setVH()
+  })
+})
 </script>
 
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img :src="imgvite" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div id="qp-app" :class="routeName?.startsWith('Auth') ? 'qp-app-auth' : ''">
+    <QpAppbar />
+    <QpTopbar v-if="routeName && !routeName?.startsWith('Auth')" />
+    <div id="qp-main">
+      <router-view :key="$route.fullPath" />
+    </div>
   </div>
-  <div>
-    aaa <span v-text="qpunit(1214)"></span>
-  </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
 
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
+#qp-app {
+  display: grid;
+  grid-template-rows: 1px 48px auto;
+  width: 100vw;
+  min-width: 300px;
+  height: 100vh;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+#qp-app.qp-app-auth {
+  grid-template-rows: 1px auto;
 }
 </style>

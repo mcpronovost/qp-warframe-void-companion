@@ -2,8 +2,6 @@
     "name": "qpFrame",
     "short_name": "qpFrame",
     "description": "Manage your Warframe relics and more.",
-    "start_url": "http://localhost:8000/",
-    "scope": "http://localhost:8000/",
     "icons": [
         {
             "src": "http://localhost:8000/static/favicon/android-chrome-192x192.png",

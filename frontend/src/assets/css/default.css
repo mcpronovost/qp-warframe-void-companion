@@ -1,0 +1,315 @@
+:root {
+  --qp-primary: #3db99b;
+  --qp-primary-dark-1: #35927c;
+  --qp-primary-dark-2: #307a69;
+  --qp-primary-dark-3: #2b6255;
+  --qp-primary-dark-4: #274e45;
+
+  --qp-secondary: #666666;
+  --qp-secondary-dark-1: #5a5a5a;
+  --qp-secondary-dark-2: #4d4d4e;
+  --qp-secondary-dark-3: #414142;
+  --qp-secondary-dark-4: #353535;
+  --qp-secondary-dark-5: #282829;
+
+  --qp-success: #22A411;
+  --qp-success-dark-1: #218d13;
+  --qp-success-dark-2: #207715;
+  --qp-success-dark-3: #1f6017;
+  --qp-success-dark-4: #1e4919;
+  --qp-success-dark-5: #1d331b;
+
+  --qp-info: #a2a2a2;
+  --qp-info-dark-1: #8c8c8c;
+  --qp-info-dark-2: #757576;
+  --qp-info-dark-3: #5f5f60;
+  --qp-info-dark-4: #494949;
+  --qp-info-dark-5: #323233;
+
+  --qp-warning: #a48311;
+  --qp-warning-dark-1: #8d7213;
+  --qp-warning-dark-2: #776115;
+  --qp-warning-dark-3: #605017;
+  --qp-warning-dark-4: #493e19;
+  --qp-warning-dark-5: #332d1b;
+
+  --qp-error: #a41111;
+  --qp-error-dark-1: #8d1313;
+  --qp-error-dark-2: #771515;
+  --qp-error-dark-3: #601717;
+  --qp-error-dark-4: #491819;
+  --qp-error-dark-5: #331a1b;
+
+  --qp-base-bg: #1c1c1d;
+  --qp-base-color: #7a7a7a;
+  --qp-base-disable-color: #3c3c3c;
+
+  --qp-navbar-bg: #141415;
+  --qp-topbar-bg: #171718;
+  --qp-sidebar-bg: #19191a;
+  --qp-sidenav-bg: #19191a;
+  --qp-sideview-bg: #1f1f20;
+
+  --qp-card-bg: #1f1f20;
+  --qp-card-bg-dark-1: #19191a;
+  --qp-card-bg-light-1: #2a2a2b;
+  --qp-card-bg-light-2: #404040;
+  --qp-card-color: #a7a7a7;
+
+  --qp-input-bg: #252527;
+  --qp-input-color: #b2b2b2;
+  --qp-input-placeholder: #666;
+  --qp-input-clearhover: #f00;
+
+  --el-color-primary: var(--qp-primary);
+}
+
+html {
+  background-color: var(--qp-base-bg);
+  font-family: "Nunito", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  font-synthesis: none;
+  line-height: 24px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
+  overflow: hidden;
+}
+
+body {
+  background-color: var(--qp-base-bg);
+  box-sizing: content-box;
+  color: var(--qp-base-color);
+  overflow-x: hidden;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  font-weight: 500;
+  color: var(--qp-primary);
+  text-decoration: inherit;
+}
+
+a:hover {
+  color: var(--qp-primary);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Quicksand", sans-serif;
+  font-weight: 300;
+  letter-spacing: 1px;
+  padding: 0;
+  margin: 0;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  transition: background-color 5000s ease-in-out 0s;
+  -webkit-text-fill-color: var(--qp-input-color) !important;
+}
+
+.qp-left {
+  text-align: left;
+}
+
+.qp-center {
+  text-align: center;
+}
+
+.qp-right {
+  text-align: right;
+}
+
+.qp-block {
+  display: block;
+}
+
+.qp-justify-content-center {
+  justify-content: center;
+}
+
+.qp-w100 {
+  width: 100%;
+}
+
+.qp-h100 {
+  height: 100%;
+}
+
+.qp-btn-card {
+  font-weight: 900;
+  display: block;
+  width: 100%;
+  height: auto;
+  padding: 16px;
+}
+
+.qp-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.qp-container.qp-centered {
+  display: flex;
+  height: calc(100vh - 49px);
+  align-items: center;
+  justify-content: center;
+}
+
+/* =================================================================================== */
+/* ===--- MAIN --------------------------------------------------------------------=== */
+/* =================================================================================== */
+
+#qp-main {
+  background-color: transparent;
+  grid-row: 3 / 3;
+}
+
+/* =================================================================================== */
+/* ===--- POPPER ------------------------------------------------------------------=== */
+/* =================================================================================== */
+
+body .el-popper.qp-topbar-popper {
+    --el-bg-color-overlay: var(--qp-navbar-bg);
+    --el-border-color-light: var(--qp-navbar-bg);
+    --el-text-color-primary: var(--qp-navbar-bg);
+    background-color: var(--qp-navbar-bg);
+    border-color: var(--qp-navbar-bg);
+}
+body .el-popper.qp-topbar-popper .el-dropdown-menu {
+    --el-bg-color-overlay: var(--qp-sidebar-bg);
+    --el-text-color-regular: #acadac;
+    --el-text-color-disabled: #5e5f5e;
+    background-color: transparent;
+    border-color: transparent;
+}
+
+/* =================================================================================== */
+/* ===--- WARFRAMES ---------------------------------------------------------------=== */
+/* =================================================================================== */
+
+.qp-warframes-list {
+  font-size: 0;
+  line-height: 0;
+}
+
+.qp-warframes-item {
+  text-align: center;
+  list-style: none;
+  display: block;
+  flex: 0 1 20%;
+  padding: 0;
+  margin: 0;
+}
+.qp-warframes-item:hover {
+  cursor: pointer;
+  opacity: 0.8;
+}
+.qp-warframes-item:active {
+  opacity: 0.5;
+}
+
+.qp-warframes-item-wrapper {
+  background-color: #222324;
+  border: 1px solid #404040;
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  padding: 0;
+  margin: 0;
+}
+
+.qp-warframes-image {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  height: 100px;
+  flex: 1 1 100px;
+  padding: 12px 6px 0;
+}
+
+.qp-warframes-name {
+  background-color: #f1f1f1;
+  color: #010101;
+  font-size: 16px;
+  line-height: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  padding: 6px;
+}
+
+.qp-warframe-completion {
+  background-color: #767676;
+  display: block;
+  height: 4px;
+  position: relative;
+}
+
+.qp-warframe-completed {
+  background-color: #3db99b;
+  width: 0%;
+  height: 4px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+}
+
+.qp-warframe-complete {
+  background-color: #3db99b;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.2;
+}
+
+.qp-warframe-complete::after {
+  content: "\2713";
+  border: 4px solid #fff;
+  border-radius: 100%;
+  color: #fff;
+  font-size: 128px;
+  line-height: 100%;
+  display: inline-block;
+  width: 128px;
+  height: 128px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.qp-warframes-components {
+  font-size: 0;
+  line-height: 0;
+  display: none;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+.qp-warframes-components>div {
+  background-color: #f1f1f1;
+  display: block;
+  flex: 1 1 25%;
+  padding: 4px 0;
+}

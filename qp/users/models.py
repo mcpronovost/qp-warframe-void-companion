@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from autoslug import AutoSlugField
 
 CHOIX_LANGS = [
     ("fr", _("French")),
@@ -20,6 +21,20 @@ class qpUserProfile(models.Model):
         verbose_name=_("User"),
         blank=False,
         null=False
+    )
+    name = models.CharField(
+        verbose_name=_("Name"),
+        max_length=32,
+        blank=False,
+        null=False
+    )
+    slug = AutoSlugField(
+        verbose_name=_("Slug"),
+        populate_from="name",
+        unique=True,
+        editable=True,
+        blank=True,
+        null=True
     )
     lang = models.CharField(
         verbose_name=_("Language"),
@@ -46,3 +61,7 @@ class qpUserProfile(models.Model):
         return "%s" % (
             str(_("Profile"))
         )
+    
+    @property
+    def initial(self):
+        return "".join([x[0] for x in self.name.split()[:2]]).upper()

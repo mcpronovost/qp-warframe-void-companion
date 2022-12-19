@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 import os
+from datetime import timedelta
 from dotenv import load_dotenv
 from pathlib import Path
 
@@ -35,6 +36,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # ===---
     "corsheaders", # https://github.com/adamchainz/django-cors-headers
+    "rest_framework",
+    "knox",
     "ordered_model", # https://github.com/django-ordered-model/django-ordered-model
     # ===---
     "qp.users",
@@ -59,7 +62,7 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware"
 ]
 
 TEMPLATES = [
@@ -94,9 +97,13 @@ CSRF_COOKIE_AGE = 86400
 
 ALLOWED_HOSTS = ["*"]
 
-CORS_ALLOWED_ORIGINS = []
+CORS_ORIGIN_ALLOW_ALL = True
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ORIGIN_WHITELIST = [
+    "http://localhost:3000"
+]
 
 # =============================================================================
 # Database
@@ -110,6 +117,28 @@ DATABASES = {
         "PASSWORD": os.getenv("DB_PASSWORD", ""),
         "HOST": os.getenv("DB_HOST", "")
     }
+}
+
+# =============================================================================
+# REST framework & Knox
+# https://www.django-rest-framework.org/
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "knox.auth.TokenAuthentication",
+        "rest_framework.authentication.TokenAuthentication"
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.AllowAny"
+    ],
+    "DEFAULT_PAGINATION_CLASS": "qp.api.pagination.qpPagination",
+    "PAGE_SIZE": 100
+}
+
+REST_KNOX = {
+  "TOKEN_TTL": timedelta(days=30),
+  "TOKEN_LIMIT_PER_USER": 3,
+  "USER_SERIALIZER": "knox.serializers.UserSerializer"
 }
 
 # =============================================================================
