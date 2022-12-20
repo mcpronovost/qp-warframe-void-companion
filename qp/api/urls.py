@@ -4,6 +4,7 @@ from knox import views as knox_views
 from qp.api.views import qpPingView
 from qp.api.views.auth import qpLoginView, qpRegisterView
 from qp.api.views.me import qpMeView, qpMeWarframeComponentsCreateView, qpMeWarframeComponentsDeleteView, qpMeRelicsListView
+from qp.api.views.users import qpUserRelicsListView
 from qp.api.views.warframes import qpWarframeListView, qpWarframeDetailView
 
 urlpatterns = [
@@ -13,6 +14,8 @@ urlpatterns = [
     path("me/warframes/components/create/", qpMeWarframeComponentsCreateView.as_view()),
     path("me/warframes/components/<int:pk>/delete/", qpMeWarframeComponentsDeleteView.as_view()),
     path("me/relics/", qpMeRelicsListView.as_view()),
+
+    path("users/<slug:slug>/relics/", qpUserRelicsListView.as_view()),
 
     path("warframes/", qpWarframeListView.as_view()),
     path("warframes/<int:pk>/", qpWarframeDetailView.as_view()),

@@ -18,6 +18,11 @@ const routes = [
     name: "Home",
     component: () => import("@/views/HomeView.vue")
   },
+  {
+    path: "/u/:slug",
+    name: "User",
+    component: () => import("@/views/UserView.vue")
+  },
   ...routeAuth,
   ...routeWarframes,
   {

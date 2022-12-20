@@ -46,5 +46,10 @@
   "chassis": "Châssis",
   "neuroptics": "Neuroptiques",
   "systems": "Systèmes",
-  "ComponentUpdated": "Composant mis à jour !"
+  "ComponentUpdated": "Composant mis à jour !",
+  "All": "Tous",
+  "Lith": "Lith",
+  "Meso": "Meso",
+  "Neo": "Neo",
+  "Axi": "Axi"
 }

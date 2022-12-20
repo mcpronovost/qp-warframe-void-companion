@@ -3,7 +3,7 @@ import type { TypeRelic } from "../types/warframe";
 import { ref, onMounted, onUnmounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useI18n } from "vue-i18n";
-import { useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { ElMessage } from "element-plus";
 import { API, HEADERS } from "../plugins/store/index";
 import { storeUser } from "../plugins/store";
@@ -18,15 +18,13 @@ import imgSystems from "../assets/img/systems.png";
 
 const { t } = useI18n()
 
-const router = useRouter()
+const route = useRoute()
 
 const useStoreUser = storeUser()
-const { rat, lang, id } = storeToRefs(useStoreUser)
+const { rat, lang } = storeToRefs(useStoreUser)
 
 const isLoading = ref<boolean>(false)
-const isLoadingOwning = ref<boolean>(false)
 const hasError = ref<string|null>(null)
-const hasErrorOwning = ref<string|null>(null)
 
 const showDrawerRelic = ref<boolean>(false)
 const dataDrawerRelic = ref<TypeRelic|null>(null)
@@ -43,27 +41,30 @@ const doRelicsList = async (era: null|string = null) => {
     let params = ""
     if (era) params = `?era=${era}`
     // ===---
-    let f = await fetch(`${API}/me/relics/${params}`, {
-        method: "GET",
-        headers: HEADERS(rat.value, lang.value)
-    })
-    .then((r) => {return r})
-    .catch(() => {return new Response(null,{status: 400})})
-    if (f.status === 200) {
-        let r = await f.json()
-        const eraList = ["Lith", "Meso", "Neo", "Axi"]
-        const sortedObj = r.results.sort((a: any, b: any) => {
-            return (
-              eraList.indexOf(a.era) - eraList.indexOf(b.era)
-            );
-        });
-        listRelicsOriginal.value = sortedObj
-        listRelics.value = sortedObj
-        isLoading.value = false
-    } else {
-        if (f.status === 401) ElMessage.error("not authorized")
-        else ElMessage.error("AnErrorOccurred")
-        hasError.value = `${f.status}`
+    try {
+        let f = await fetch(`${API}/users/${route.params.slug}/relics/${params}`, {
+            method: "GET"
+        })
+        .then((r) => {return r})
+        .catch(() => {return new Response(null,{status: 400})})
+        if (f.status === 200) {
+            let r = await f.json()
+            const eraList = ["Lith", "Meso", "Neo", "Axi"]
+            const sortedObj = r.results.sort((a: any, b: any) => {
+                return (
+                  eraList.indexOf(a.era) - eraList.indexOf(b.era)
+                );
+            });
+            listRelicsOriginal.value = sortedObj
+            listRelics.value = sortedObj
+            isLoading.value = false
+        } else {
+            throw f.status
+        }
+    } catch (e) {
+        if (e === 401) ElMessage.error("not authorized")
+        else ElMessage.error(t("AnErrorOccurred"))
+        hasError.value = `${e}`
         isLoading.value = false
     }
 }
@@ -98,47 +99,13 @@ const doUpdateWinWidth = () => {
   winWidth.value = window.innerWidth
 }
 
-const doWarframeOwn = async (id: Number) => {
-  isLoadingOwning.value = true
-  hasErrorOwning.value = null
-  // ===---
-  let data = new FormData()
-  data.append("id", id.toString())
-  // ===---
-  try {
-      let f = await fetch(`${API}/me/warframes/components/create/`, {
-          method: "POST",
-          body: data,
-          headers: HEADERS(rat.value, lang.value)
-      })
-      .then((r) => {return r})
-      .catch(() => {return new Response(null,{status: 400})})
-      if (f.status === 201) {
-          ElMessage.success(t("ComponentUpdated"))
-          isLoadingOwning.value = false
-          closeDrawerRelic()
-          doRelicsList()
-      } else {
-          throw f.status
-      }
-  } catch (e) {
-      if (e === 401) ElMessage.error("not authorized")
-      else ElMessage.error(t("AnErrorOccurred"))
-      hasErrorOwning.value = `${e}`
-      isLoadingOwning.value = false
-  }
-}
-
 onMounted(() => {
-  if (rat.value) {
     doRelicsList()
     window.addEventListener("resize", doUpdateWinWidth)
-  }
-  else router.push({name: "AuthLogin"})
 })
 
 onUnmounted(() => {
-  window.removeEventListener("resize", doUpdateWinWidth)
+    window.removeEventListener("resize", doUpdateWinWidth)
 })
 </script>
 
@@ -189,8 +156,8 @@ onUnmounted(() => {
           <span v-if="dataDrawerRelic" class="el-drawer__title" v-text="`${dataDrawerRelic.era} ${dataDrawerRelic.name}`"></span>
         </template>
         <div>
-          <ul v-if="dataDrawerRelic?.components" v-loading="isLoadingOwning" class="qp-relics-drawer-components-list">
-            <li v-for="(component, n) in dataDrawerRelic.components" :key="`warframe-components-${n}`" class="qp-relics-drawer-components-item" @click="component.type == 'warframe' ? doWarframeOwn(component.id) : ''">
+          <ul v-if="dataDrawerRelic?.components" class="qp-relics-drawer-components-list">
+            <li v-for="(component, n) in dataDrawerRelic.components" :key="`warframe-components-${n}`" class="qp-relics-drawer-components-item">
               <div class="qp-relics-drawer-components-item-wrapper">
                 <div class="qp-relics-drawer-components-img">
                   <el-image v-if="component.component == 'blueprint'" :src="imgBlueprint" />
@@ -327,10 +294,6 @@ onUnmounted(() => {
   padding: 0;
   margin: 0 0 10px 0;
 }
-.qp-relics-drawer-components-item:hover {
-  border-color: var(--qp-card-bg-light-2);
-  cursor: pointer;
-}
 .qp-relics-drawer-components-item-wrapper {
   box-sizing: border-box;
   overflow: hidden;
@@ -343,19 +306,6 @@ onUnmounted(() => {
   position: relative;
   padding: 0 2px 12px 0;
   margin: 0;
-}
-.qp-relics-drawer-components-item-wrapper::after {
-  content: "";
-  background-color: var(--qp-primary);
-  width: 0;
-  height: 3px;
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  transition: width 0.3s;
-}
-.qp-relics-drawer-components-item:hover .qp-relics-drawer-components-item-wrapper::after {
-  width: 100%;
 }
 .qp-relics-drawer-components-img {
   flex: 0 0 80px;

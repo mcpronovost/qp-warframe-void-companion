@@ -52,6 +52,10 @@ class qpUserProfile(models.Model):
         blank=False,
         null=False
     )
+    is_public = models.BooleanField(
+        verbose_name=_("Public"),
+        default=False
+    )
 
     class Meta:
         verbose_name = _("Profile")

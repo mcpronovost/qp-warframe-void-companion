@@ -1,0 +1,1 @@
+import{d as t,c,w as a,f as e,g as p,i as r}from"./index-b795a324.js";const l=t({__name:"ProfileView",setup(s){return(_,u)=>{const o=e("qp-underconstruction"),n=e("qp-page");return p(),c(n,null,{default:a(()=>[r(o)]),_:1})}}});export{l as default};

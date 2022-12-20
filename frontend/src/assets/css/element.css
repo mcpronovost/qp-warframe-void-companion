@@ -163,6 +163,10 @@ body .el-divider--horizontal {
     margin: 5px 0;
 }
 
+body .el-drawer {
+    --el-drawer-bg-color: var(--qp-base-bg);
+}
+
 body .el-dropdown-menu {
     --el-bg-color-overlay: var(--qp-sidebar-bg);
     --el-text-color-regular: #acadac;

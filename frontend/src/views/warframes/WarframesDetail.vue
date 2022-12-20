@@ -221,8 +221,9 @@ onMounted(() => {doWarframeDetail()})
   align-items: flex-start;
   justify-content: flex-start;
   height: 100%;
+  min-height: 104px;
   position: relative;
-  padding: 0;
+  padding: 0 100px 0 0;
   margin: 0;
 }
 .qp-warframes-detail-components-item-wrapper::after {
@@ -246,8 +247,6 @@ onMounted(() => {doWarframeDetail()})
   font-size: 80px;
   line-height: 100%;
   text-align: right;
-  width: 100%;
-  height: 100%;
   position: absolute;
   top: 0;
   left: 0;
@@ -255,6 +254,7 @@ onMounted(() => {doWarframeDetail()})
   bottom: 0;
   opacity: 0.2;
   z-index: 1;
+  padding: 12px 12px 0 0;
 }
 .qp-warframes-detail-components-img {
   flex: 0 0 80px;

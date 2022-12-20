@@ -42,7 +42,10 @@ const goTo = (obj: any) => {
 <template>
     <div id="qp-topbar">
         <div id="qp-topbar-left">
-            <span>Warframe Void Companion</span>
+            <el-button text @click="router.push({name:'Home'})">
+                <span id="qp-topbar-logo-text">Warframe Void Companion</span>
+                <span id="qp-topbar-logo-initial">WVC</span>
+            </el-button>
         </div>
         <div id="qp-topbar-center">
             <!---->

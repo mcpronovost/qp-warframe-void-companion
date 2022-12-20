@@ -100,7 +100,7 @@ class qpMeRelicsListView(ListAPIView):
                     all_relics = all_relics.filter(
                         era=era
                     )
-                return all_relics
+                return all_relics.distinct()
         except Exception as e:
             print("Error : ", e)
             pass

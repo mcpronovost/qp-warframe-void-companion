@@ -16,6 +16,12 @@ class qpWarframeAdmin(admin.ModelAdmin):
     inlines = [qpWarframeComponentInline]
 
 
+@admin.register(qpWarframeRelicReward)
+class qpWarframeRelicRewardAdmin(admin.ModelAdmin):
+    list_display = ["component", "percent"]
+    list_filter = ["percent"]
+
+
 class qpWarframeRelicRewardInline(admin.StackedInline):
     model = qpWarframeRelicReward
     extra = 0

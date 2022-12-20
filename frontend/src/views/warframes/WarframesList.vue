@@ -48,6 +48,7 @@ onMounted(() => {doWarframesList()})
 
 <template>
   <div v-if="!isLoading && !hasError" class="qp-container">
+    <qp-header :title="$t('Warframes')" page-type="warframes" />
     <el-row class="qp-warframes-list">
       <el-col v-for="(warframe, n) in listWarframes" :key="`warframes-${n}`" :span="12" :sm="8" :md="6" :lg="4">
         <div class="qp-warframes-item" @click="$router.push({name:'WarframesDetail',params:{pk:warframe.id,slug:qpslug(warframe.name)}})">
@@ -68,3 +69,101 @@ onMounted(() => {doWarframesList()})
   <qp-notfound v-else-if="!isLoading" />
   <qp-loading v-else />
 </template>
+
+<style scoped>
+.qp-warframes-list {
+  font-size: 0;
+  line-height: 0;
+}
+.qp-warframes-item {
+  text-align: center;
+  list-style: none;
+  display: block;
+  flex: 0 1 20%;
+  padding: 0;
+  margin: 0;
+}
+.qp-warframes-item:hover {
+  cursor: pointer;
+  opacity: 0.8;
+}
+.qp-warframes-item:active {
+  opacity: 0.5;
+}
+.qp-warframes-item-wrapper {
+  background-color: #222324;
+  border: 1px solid #404040;
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  padding: 0;
+  margin: 0;
+}
+
+.qp-warframes-image {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  height: 100px;
+  flex: 1 1 100px;
+  padding: 12px 6px 0;
+}
+
+.qp-warframes-name {
+  background-color: #f1f1f1;
+  color: #010101;
+  font-size: 16px;
+  line-height: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  padding: 6px;
+}
+
+.qp-warframe-completion {
+  background-color: #767676;
+  display: block;
+  height: 4px;
+  position: relative;
+}
+
+.qp-warframe-completed {
+  background-color: #3db99b;
+  width: 0%;
+  height: 4px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+}
+
+.qp-warframe-complete {
+  background-color: #3db99b;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.2;
+}
+
+.qp-warframe-complete::after {
+  content: "\2713";
+  border: 4px solid #fff;
+  border-radius: 100%;
+  color: #fff;
+  font-size: 128px;
+  line-height: 100%;
+  display: inline-block;
+  width: 128px;
+  height: 128px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+</style>
