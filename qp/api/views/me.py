@@ -77,6 +77,14 @@ class qpMeRelicsListView(ListAPIView):
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset(request))
+        queryset = queryset.extra(
+            select={
+                "is1":" era='Lith'",
+                "is2": " era='Meso'",
+                "is3": " era='Neo'",
+                "is4": " era='Axi'"
+            }
+        ).extra(order_by = ["-is1", "-is2", "-is3", "-is4"])
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)

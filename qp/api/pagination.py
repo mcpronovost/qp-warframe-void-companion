@@ -2,7 +2,7 @@ from rest_framework import pagination
 from rest_framework.response import Response
 
 class qpPagination(pagination.PageNumberPagination):
-    page_size = 100
+    page_size = 48
 
     def get_page_size(self, request):
         query_limit = request.query_params.get("limit", None)

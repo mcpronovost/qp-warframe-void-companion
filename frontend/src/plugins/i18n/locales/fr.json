@@ -8,6 +8,7 @@
   "Username": "Nom d'utilisateur",
   "Email": "Courriel",
   "Name": "Nom",
+  "PublicName": "Nom public",
   "Password": "Mot de passe",
   "PasswordConfirm": "Confirmation",
   "RegisterMe": "M'inscrire",

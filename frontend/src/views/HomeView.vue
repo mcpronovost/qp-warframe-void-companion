@@ -33,17 +33,20 @@ const dataDrawerRelic = ref<TypeRelic|null>(null)
 
 const listRelicsOriginal = ref<Array<any>>([])
 const listRelics = ref<Array<any>>([])
+  
+const relics_total = ref<number>(0)
+const relics_size = ref<number>(1)
+const relics_page = ref<number>(1)
 
 const winWidth = ref(window.innerWidth)
 
-const doRelicsList = async (era: null|string = null) => {
+const doRelicsList = async (page: string|null) => {
     isLoading.value = true
     hasError.value = null
     // ===---
-    let params = ""
-    if (era) params = `?era=${era}`
+    let query = page ? `?page=${page}` : ""
     // ===---
-    let f = await fetch(`${API}/me/relics/${params}`, {
+    let f = await fetch(`${API}/me/relics/${query}`, {
         method: "GET",
         headers: HEADERS(rat.value, lang.value)
     })
@@ -51,14 +54,10 @@ const doRelicsList = async (era: null|string = null) => {
     .catch(() => {return new Response(null,{status: 400})})
     if (f.status === 200) {
         let r = await f.json()
-        const eraList = ["Lith", "Meso", "Neo", "Axi"]
-        const sortedObj = r.results.sort((a: any, b: any) => {
-            return (
-              eraList.indexOf(a.era) - eraList.indexOf(b.era)
-            );
-        });
-        listRelicsOriginal.value = sortedObj
-        listRelics.value = sortedObj
+        relics_total.value = r.count
+        relics_size.value = r.size
+        listRelicsOriginal.value = r.results
+        listRelics.value = r.results
         isLoading.value = false
     } else {
         if (f.status === 401) ElMessage.error("not authorized")
@@ -184,6 +183,8 @@ onUnmounted(() => {
           </el-col>
         </TransitionGroup>
       </el-row>
+      <el-pagination background hide-on-single-page layout="prev, pager, next" v-model:current-page="relics_page" :page-size="relics_size" :total="relics_total" @current-change="doRelicsList" />
+      <!---->
       <el-drawer v-model="showDrawerRelic" direction="rtl" :size="winWidth < 992 ? '90%' : '30%'" :before-close="closeDrawerRelic">
         <template #header>
           <span v-if="dataDrawerRelic" class="el-drawer__title" v-text="`${dataDrawerRelic.era} ${dataDrawerRelic.name}`"></span>

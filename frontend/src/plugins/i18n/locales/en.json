@@ -8,6 +8,7 @@
   "Username": "Username",
   "Email": "Email",
   "Name": "Name",
+  "PublicName": "Public Name",
   "Password": "Password",
   "PasswordConfirm": "Confirm Password",
   "RegisterMe": "Register Me",

@@ -48,7 +48,18 @@ const goTo = (obj: any) => {
             </el-button>
         </div>
         <div id="qp-topbar-center">
-            <!---->
+            <el-button text :disabled="$route.name=='Warframes'" @click="router.push({name:'Warframes'})">
+                <span v-text="$t('Warframes')"></span>
+            </el-button>
+            <el-button text :disabled="true" @click="router.push({name:'PrimaryWeapons'})">
+                <span v-text="$t('PrimaryWeapons')"></span>
+            </el-button>
+            <el-button text :disabled="true" @click="router.push({name:'SecondaryWeapons'})">
+                <span v-text="$t('SecondaryWeapons')"></span>
+            </el-button>
+            <el-button text :disabled="true" @click="router.push({name:'MeleeWeapons'})">
+                <span v-text="$t('MeleeWeapons')"></span>
+            </el-button>
         </div>
         <div v-if="rat" id="qp-topbar-right">
             <div class="qp-topbar-item">
@@ -134,6 +145,12 @@ const goTo = (obj: any) => {
         align-items: center;
         justify-content: flex-start;
         padding: 0 0 0 12px;
+    }
+    /* ===--- CENTER ---=== */
+    @media (max-width: 1199px) {
+        #qp-topbar-center .el-button {
+            display: none;
+        }
     }
     /* ===--- RIGHT ---=== */
     #qp-topbar-right {

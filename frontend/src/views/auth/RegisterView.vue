@@ -180,7 +180,7 @@ const doRegister = async () => {
                         <el-input v-model="formRegister.email" :placeholder="$t('Email')" :prefix-icon="Message" />
                     </el-form-item>
                     <el-form-item prop="name">
-                        <el-input v-model="formRegister.name" :placeholder="$t('Name')" :prefix-icon="EditPen" />
+                        <el-input v-model="formRegister.name" :placeholder="$t('PublicName')" :prefix-icon="EditPen" />
                     </el-form-item>
                     <el-form-item prop="password">
                         <el-input v-model="formRegister.password" :placeholder="$t('Password')" :prefix-icon="Lock" type="password" />
