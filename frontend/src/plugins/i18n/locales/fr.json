@@ -41,6 +41,7 @@
   "MeleeWeapons": "Armes de mêlée",
   "Relic": "Relique",
   "Relics": "Reliques",
+  "RelicsOf": "Reliques de {0}",
   "Warframe": "Warframe",
   "Warframes": "Warframes",
   "blueprint": "Schéma",
@@ -52,5 +53,13 @@
   "Lith": "Lith",
   "Meso": "Meso",
   "Neo": "Neo",
-  "Axi": "Axi"
+  "Axi": "Axi",
+  "ShowCompleted": "Voir les terminés",
+  "HideCompleted": "Cacher les terminés",
+  "YoucompletedallPrimeWarframes": "Vous avez terminé toutes les Warframes primes",
+  "Settings": "Paramètres",
+  "ContentUnderDevelopment": "Contenu en développement",
+  "ComeBackLater": "Revenez plus tard",
+  "Sharelinkcopiedtoclipboard": "Lien de partage copié dans le presse-papier",
+  "Share": "Partager"
 }

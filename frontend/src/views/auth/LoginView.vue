@@ -82,7 +82,7 @@ const doLogin = async () => {
                         <el-input v-model="formLogin.username" :placeholder="$t('Username')" :prefix-icon="User" />
                     </el-form-item>
                     <el-form-item prop="password">
-                        <el-input v-model="formLogin.password" :placeholder="$t('Password')" :prefix-icon="Lock" type="password" />
+                        <el-input v-model="formLogin.password" :placeholder="$t('Password')" :prefix-icon="Lock" type="password" @keyup.enter="doSubmitLogin()" />
                     </el-form-item>
                     <el-alert v-if="hasErrorLogin" type="error" show-icon :closable="false">
                         <p v-html="hasErrorLogin"></p>

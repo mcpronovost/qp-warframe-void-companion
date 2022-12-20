@@ -5,7 +5,7 @@ import { storeToRefs } from "pinia";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
-import { API, HEADERS } from "../plugins/store/index";
+import { WEB, API, HEADERS } from "../plugins/store/index";
 import { storeUser } from "../plugins/store";
 import imgRelicLith from "../assets/img/relic_lith.png";
 import imgRelicMeso from "../assets/img/relic_meso.png";
@@ -21,9 +21,10 @@ const { t } = useI18n()
 const router = useRouter()
 
 const useStoreUser = storeUser()
-const { rat, lang, id } = storeToRefs(useStoreUser)
+const { rat, lang, slug } = storeToRefs(useStoreUser)
 
 const isLoading = ref<boolean>(false)
+const isLoadingUpdate = ref<boolean>(false)
 const isLoadingOwning = ref<boolean>(false)
 const hasError = ref<string|null>(null)
 const hasErrorOwning = ref<string|null>(null)
@@ -40,30 +41,38 @@ const relics_page = ref<number>(1)
 
 const winWidth = ref(window.innerWidth)
 
-const doRelicsList = async (page: string|null) => {
-    isLoading.value = true
+const doRelicsList = async (page: string|null, era: string|null, update = false) => {
+    if (!update) isLoading.value = true
+    else isLoadingUpdate.value = true
     hasError.value = null
     // ===---
-    let query = page ? `?page=${page}` : ""
+    let query = page ? `?page=${page}` : "?page=1"
+    query += era ? `&era=${era}` : ""
     // ===---
-    let f = await fetch(`${API}/me/relics/${query}`, {
-        method: "GET",
-        headers: HEADERS(rat.value, lang.value)
-    })
-    .then((r) => {return r})
-    .catch(() => {return new Response(null,{status: 400})})
-    if (f.status === 200) {
-        let r = await f.json()
-        relics_total.value = r.count
-        relics_size.value = r.size
-        listRelicsOriginal.value = r.results
-        listRelics.value = r.results
+    try {
+        let f = await fetch(`${API}/me/relics/${query}`, {
+            method: "GET",
+            headers: HEADERS(rat.value, lang.value)
+        })
+        .then((r) => {return r})
+        .catch(() => {return new Response(null,{status: 400})})
+        if (f.status === 200) {
+            let r = await f.json()
+            relics_total.value = r.count
+            relics_size.value = r.size
+            listRelicsOriginal.value = r.results
+            listRelics.value = r.results
+            isLoading.value = false
+            isLoadingUpdate.value = false
+        } else {
+            throw f.status
+        }
+    } catch (e) {
+        if (e === 401) ElMessage.error("not authorized")
+        else ElMessage.error(t("AnErrorOccurred"))
+        hasError.value = `${e}`
         isLoading.value = false
-    } else {
-        if (f.status === 401) ElMessage.error("not authorized")
-        else ElMessage.error("AnErrorOccurred")
-        hasError.value = `${f.status}`
-        isLoading.value = false
+        isLoadingUpdate.value = false
     }
 }
 
@@ -116,7 +125,7 @@ const doWarframeOwn = async (id: Number) => {
           ElMessage.success(t("ComponentUpdated"))
           isLoadingOwning.value = false
           closeDrawerRelic()
-          doRelicsList()
+          doRelicsList(null, null)
       } else {
           throw f.status
       }
@@ -128,9 +137,15 @@ const doWarframeOwn = async (id: Number) => {
   }
 }
 
+const doCopyShareLink = () => {
+  console.log(slug)
+  navigator.clipboard.writeText(`${WEB}/u/${slug.value}`);
+  ElMessage.success(t("Sharelinkcopiedtoclipboard"))
+}
+
 onMounted(() => {
   if (rat.value) {
-    doRelicsList()
+    doRelicsList(null, null)
     window.addEventListener("resize", doUpdateWinWidth)
   }
   else router.push({name: "AuthLogin"})
@@ -145,16 +160,26 @@ onUnmounted(() => {
   <qp-page>
     <div v-if="!isLoading && !hasError" class="qp-container">
       <qp-header :title="$t('Relics')" page-type="relics" />
-      <div class="qp-relics-actions-era">
-        <el-button-group>
-          <el-button @click="doRelicsSortByEra()"><span v-text="$t('All')"></span></el-button>
-          <el-button @click="doRelicsSortByEra('Lith')"><span v-text="$t('Lith')"></span></el-button>
-          <el-button @click="doRelicsSortByEra('Meso')"><span v-text="$t('Meso')"></span></el-button>
-          <el-button @click="doRelicsSortByEra('Neo')"><span v-text="$t('Neo')"></span></el-button>
-          <el-button @click="doRelicsSortByEra('Axi')"><span v-text="$t('Axi')"></span></el-button>
-        </el-button-group>
+      <div class="qp-relics-actions">
+        <div class="qp-relics-actions-extra">
+          <el-button-group>
+            <el-button @click="doCopyShareLink()">
+              <el-icon class="mdi mdi-share-variant" />
+              <span v-text="$t('Share')"></span>
+            </el-button>
+          </el-button-group>
+        </div>
+        <div class="qp-relics-actions-era">
+          <el-button-group>
+            <el-button :disabled="isLoadingUpdate" @click="doRelicsList(null, null, true)"><span v-text="$t('All')"></span></el-button>
+            <el-button :disabled="isLoadingUpdate" @click="doRelicsList(null, 'Lith', true)"><span v-text="$t('Lith')"></span></el-button>
+            <el-button :disabled="isLoadingUpdate" @click="doRelicsList(null, 'Meso', true)"><span v-text="$t('Meso')"></span></el-button>
+            <el-button :disabled="isLoadingUpdate" @click="doRelicsList(null, 'Neo', true)"><span v-text="$t('Neo')"></span></el-button>
+            <el-button :disabled="isLoadingUpdate" @click="doRelicsList(null, 'Axi', true)"><span v-text="$t('Axi')"></span></el-button>
+          </el-button-group>
+        </div>
       </div>
-      <el-row class="qp-relics-list">
+      <el-row v-loading="isLoadingUpdate" class="qp-relics-list">
         <TransitionGroup name="list" mode="out-in">
           <el-col v-for="(relic, n) in listRelics" :key="`relics-${n}`" :span="12" :sm="8" :md="6" :lg="4" class="qp-relics-col">
             <div class="qp-relics-item" @click="openDrawerRelic(relic)">
@@ -182,8 +207,10 @@ onUnmounted(() => {
             </div>
           </el-col>
         </TransitionGroup>
+        <el-col>
+            <el-pagination background hide-on-single-page layout="prev, pager, next" v-model:current-page="relics_page" :page-size="relics_size" :total="relics_total" @current-change="doRelicsList" />
+        </el-col>
       </el-row>
-      <el-pagination background hide-on-single-page layout="prev, pager, next" v-model:current-page="relics_page" :page-size="relics_size" :total="relics_total" @current-change="doRelicsList" />
       <!---->
       <el-drawer v-model="showDrawerRelic" direction="rtl" :size="winWidth < 992 ? '90%' : '30%'" :before-close="closeDrawerRelic">
         <template #header>
@@ -221,9 +248,17 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+.qp-relics-actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 0 20px 20px;
+}
+.qp-relics-actions-extra {
+  text-align: left;
+}
 .qp-relics-actions-era {
   text-align: right;
-  padding: 0 20px 12px;
 }
 /* ===---=== */
 .qp-relics-list {

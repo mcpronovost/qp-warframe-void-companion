@@ -16,7 +16,7 @@ class qpMeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = qpUserProfile
-        fields = ["id", "username", "email", "name", "initial", "slug", "lang", "timezone"]
+        fields = ["id", "username", "email", "name", "initial", "slug", "lang", "timezone", "is_completed", "is_public"]
 
 
 class qpMeWarframeComponentsSerializer(serializers.ModelSerializer):

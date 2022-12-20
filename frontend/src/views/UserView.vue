@@ -24,40 +24,45 @@ const useStoreUser = storeUser()
 const { rat, lang } = storeToRefs(useStoreUser)
 
 const isLoading = ref<boolean>(false)
+const isLoadingUpdate = ref<boolean>(false)
 const hasError = ref<string|null>(null)
 
 const showDrawerRelic = ref<boolean>(false)
 const dataDrawerRelic = ref<TypeRelic|null>(null)
 
+const userName = ref<string>("")
 const listRelicsOriginal = ref<Array<any>>([])
 const listRelics = ref<Array<any>>([])
+  
+const relics_total = ref<number>(0)
+const relics_size = ref<number>(1)
+const relics_page = ref<number>(1)
 
 const winWidth = ref(window.innerWidth)
 
-const doRelicsList = async (era: null|string = null) => {
-    isLoading.value = true
+const doRelicsList = async (page: string|null, era: string|null, update = false) => {
+    if (!update) isLoading.value = true
+    else isLoadingUpdate.value = true
     hasError.value = null
     // ===---
-    let params = ""
-    if (era) params = `?era=${era}`
+    let query = page ? `?page=${page}` : "?page=1"
+    query += era ? `&era=${era}` : ""
     // ===---
     try {
-        let f = await fetch(`${API}/users/${route.params.slug}/relics/${params}`, {
+        let f = await fetch(`${API}/users/${route.params.slug}/relics/${query}`, {
             method: "GET"
         })
         .then((r) => {return r})
         .catch(() => {return new Response(null,{status: 400})})
         if (f.status === 200) {
             let r = await f.json()
-            const eraList = ["Lith", "Meso", "Neo", "Axi"]
-            const sortedObj = r.results.sort((a: any, b: any) => {
-                return (
-                  eraList.indexOf(a.era) - eraList.indexOf(b.era)
-                );
-            });
-            listRelicsOriginal.value = sortedObj
-            listRelics.value = sortedObj
+            userName.value = r.user
+            relics_total.value = r.count
+            relics_size.value = r.size
+            listRelicsOriginal.value = r.results
+            listRelics.value = r.results
             isLoading.value = false
+            isLoadingUpdate.value = false
         } else {
             throw f.status
         }
@@ -66,6 +71,7 @@ const doRelicsList = async (era: null|string = null) => {
         else ElMessage.error(t("AnErrorOccurred"))
         hasError.value = `${e}`
         isLoading.value = false
+        isLoadingUpdate.value = false
     }
 }
 
@@ -75,14 +81,6 @@ const sortByEra = (relics: Array<TypeRelic>, era: String) => {
   })
   if (result != undefined && result.length) return result
   return []
-}
-
-const doRelicsSortByEra = (era: null|string = null) => {
-  if (era) {
-    listRelics.value = sortByEra(listRelicsOriginal.value, era)
-  } else {
-    listRelics.value = listRelicsOriginal.value
-  }
 }
 
 const openDrawerRelic = (relic: TypeRelic|null = null) => {
@@ -100,7 +98,7 @@ const doUpdateWinWidth = () => {
 }
 
 onMounted(() => {
-    doRelicsList()
+    doRelicsList(null, null)
     window.addEventListener("resize", doUpdateWinWidth)
 })
 
@@ -112,17 +110,17 @@ onUnmounted(() => {
 <template>
   <qp-page>
     <div v-if="!isLoading && !hasError" class="qp-container">
-      <qp-header :title="$t('Relics')" page-type="relics" />
+      <qp-header :title="$t('RelicsOf', [userName])" page-type="relics" />
       <div class="qp-relics-actions-era">
         <el-button-group>
-          <el-button @click="doRelicsSortByEra()"><span v-text="$t('All')"></span></el-button>
-          <el-button @click="doRelicsSortByEra('Lith')"><span v-text="$t('Lith')"></span></el-button>
-          <el-button @click="doRelicsSortByEra('Meso')"><span v-text="$t('Meso')"></span></el-button>
-          <el-button @click="doRelicsSortByEra('Neo')"><span v-text="$t('Neo')"></span></el-button>
-          <el-button @click="doRelicsSortByEra('Axi')"><span v-text="$t('Axi')"></span></el-button>
+          <el-button :disabled="isLoadingUpdate" @click="doRelicsList(null, null, true)"><span v-text="$t('All')"></span></el-button>
+          <el-button :disabled="isLoadingUpdate" @click="doRelicsList(null, 'Lith', true)"><span v-text="$t('Lith')"></span></el-button>
+          <el-button :disabled="isLoadingUpdate" @click="doRelicsList(null, 'Meso', true)"><span v-text="$t('Meso')"></span></el-button>
+          <el-button :disabled="isLoadingUpdate" @click="doRelicsList(null, 'Neo', true)"><span v-text="$t('Neo')"></span></el-button>
+          <el-button :disabled="isLoadingUpdate" @click="doRelicsList(null, 'Axi', true)"><span v-text="$t('Axi')"></span></el-button>
         </el-button-group>
       </div>
-      <el-row class="qp-relics-list">
+      <el-row v-loading="isLoadingUpdate" class="qp-relics-list">
         <TransitionGroup name="list" mode="out-in">
           <el-col v-for="(relic, n) in listRelics" :key="`relics-${n}`" :span="12" :sm="8" :md="6" :lg="4" class="qp-relics-col">
             <div class="qp-relics-item" @click="openDrawerRelic(relic)">
@@ -150,7 +148,11 @@ onUnmounted(() => {
             </div>
           </el-col>
         </TransitionGroup>
+        <el-col>
+            <el-pagination background hide-on-single-page layout="prev, pager, next" v-model:current-page="relics_page" :page-size="relics_size" :total="relics_total" @current-change="doRelicsList" />
+        </el-col>
       </el-row>
+      <!---->
       <el-drawer v-model="showDrawerRelic" direction="rtl" :size="winWidth < 992 ? '90%' : '30%'" :before-close="closeDrawerRelic">
         <template #header>
           <span v-if="dataDrawerRelic" class="el-drawer__title" v-text="`${dataDrawerRelic.era} ${dataDrawerRelic.name}`"></span>

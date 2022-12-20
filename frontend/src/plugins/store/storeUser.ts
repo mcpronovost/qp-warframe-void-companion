@@ -9,9 +9,12 @@ const initState: TypeUserStore = {
     "username": null,
     "email": null,
     "name": null,
+    "slug": null,
     "lang": "fr",
     "tz": "America/Toronto",
-    "last": new Date().getTime()
+    "last": new Date().getTime(),
+    "is_completed": false,
+    "hide_completed_warframes": false
 }
 
 export const QpStoreUser = defineStore("storeUser", {
@@ -39,6 +42,11 @@ export const QpStoreUser = defineStore("storeUser", {
                 state.last = new Date().getTime()
             })
         },
+        updateHideCompletedWarframes (payload: boolean) {
+            this.$patch((state) => {
+                state.hide_completed_warframes = payload
+            })
+        },
         cleanUser () {
             Object.assign(this, initState)
             this.updateUser()
@@ -56,6 +64,9 @@ export const QpStoreUser = defineStore("storeUser", {
                         state.username = r.username
                         state.email = r.email
                         state.name = r.name
+                        state.slug = r.slug
+                        state.is_completed = r.is_completed
+                        state.hide_completed_warframes = true
                     })
                     this.updateLang(r.lang)
                     this.updateTimezone(r.timezone)

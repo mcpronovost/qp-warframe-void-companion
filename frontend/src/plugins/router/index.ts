@@ -26,11 +26,11 @@ const routes = [
   ...routeAuth,
   ...routeWarframes,
   {
-    path: "/profile",
-    name: "Profile",
-    component: () => import("@/views/ProfileView.vue"),
+    path: "/settings",
+    name: "Settings",
+    component: () => import("@/views/SettingsView.vue"),
     meta: {
-      title: "Profile"
+      title: "Settings"
     }
   },
   /* ===--- FALLBACK ---=== */
@@ -66,7 +66,7 @@ router.beforeEach((to, from, next) => {
     const useStoreApp = storeApp()
     const { updateIsLoading } = useStoreApp
     const useStoreUser = storeUser()
-    const { updateUser } = useStoreUser
+    const { updateUser, is_completed } = useStoreUser
     updateIsLoading(true)
     updateUser()
     next()

@@ -15,6 +15,7 @@ class qpUserRelicsListView(ListAPIView):
     permission_classes = [AllowAny]
     queryset = qpRelic.objects.all()
     serializer_class = qpUserRelicsSerializer
+    page_type = "users"
 
     def get(self, request, *args, **kwargs):
         user = User.objects.filter(

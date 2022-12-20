@@ -10,11 +10,13 @@ import { qpslug } from "@mcpronovost/qpfilters";
 const { t } = useI18n()
 
 const useStoreUser = storeUser()
-const { rat, lang, id } = storeToRefs(useStoreUser)
+const { rat, lang, hide_completed_warframes } = storeToRefs(useStoreUser)
+const { updateHideCompletedWarframes } = useStoreUser
 
 const isLoading = ref<boolean>(false)
 const hasError = ref<string|null>(null)
 
+const listWarframesOriginal = ref<Array<any>>([])
 const listWarframes = ref<Array<any>>([])
 
 const doWarframesList = async () => {
@@ -30,7 +32,8 @@ const doWarframesList = async () => {
         .catch(() => {return new Response(null,{status: 400})})
         if (f.status === 200) {
             let r = await f.json()
-            listWarframes.value = r.results
+            listWarframesOriginal.value = r.results
+            listWarframes.value = doFormatWarframesList(hide_completed_warframes.value)
             isLoading.value = false
         } else {
             throw f.status
@@ -43,25 +46,62 @@ const doWarframesList = async () => {
     }
 }
 
+const doFormatWarframesList = (hide: Boolean = false) => {
+  if (hide) {
+    let result = listWarframesOriginal.value.filter((w) => {
+      return w.completion < 100
+    })
+    return result
+  } else {
+    return listWarframesOriginal.value
+  }
+}
+
+const showCompletedWarframes = () => {
+  updateHideCompletedWarframes(false)
+  listWarframes.value = doFormatWarframesList(false)
+}
+
+const hideCompletedWarframes = () => {
+  updateHideCompletedWarframes(true)
+  listWarframes.value = doFormatWarframesList(true)
+}
+
 onMounted(() => {doWarframesList()})
 </script>
 
 <template>
   <div v-if="!isLoading && !hasError" class="qp-container">
     <qp-header :title="$t('Warframes')" page-type="warframes" />
-    <el-row class="qp-warframes-list">
-      <el-col v-for="(warframe, n) in listWarframes" :key="`warframes-${n}`" :span="12" :sm="8" :md="6" :lg="4">
-        <div class="qp-warframes-item" @click="$router.push({name:'WarframesDetail',params:{pk:warframe.id,slug:qpslug(warframe.name)}})">
-          <div class="qp-warframes-item-wrapper">
-            <div class="qp-warframes-image" :style="`background-image:url('https://raw.githubusercontent.com/WFCD/warframe-items/master/data/img/${warframe.image_name}')`"></div>
-            <div class="qp-warframes-name">
-              <span v-text="warframe.name"></span>
-            </div>
-            <div v-if="warframe.completion == 100" class="qp-warframe-complete"></div>
-            <div class="qp-warframe-completion">
-              <div class="qp-warframe-completed" :style="`width:${warframe.completion}%;`"></div>
+    <div class="qp-warframes-actions">
+      <el-button-group>
+        <el-button v-if="hide_completed_warframes" @click="showCompletedWarframes()"><span v-text="$t('ShowCompleted')"></span></el-button>
+        <el-button v-else @click="hideCompletedWarframes()"><span v-text="$t('HideCompleted')"></span></el-button>
+      </el-button-group>
+    </div>
+    <el-row v-if="listWarframes.length" class="qp-warframes-list">
+      <TransitionGroup name="list" mode="out-in">
+        <el-col v-for="(warframe, n) in listWarframes" :key="`warframes-${n}`" :span="12" :sm="8" :md="6" :lg="4">
+          <div class="qp-warframes-item" @click="$router.push({name:'WarframesDetail',params:{pk:warframe.id,slug:qpslug(warframe.name)}})">
+            <div class="qp-warframes-item-wrapper">
+              <div class="qp-warframes-image" :style="`background-image:url('https://raw.githubusercontent.com/WFCD/warframe-items/master/data/img/${warframe.image_name}')`"></div>
+              <div class="qp-warframes-name">
+                <span v-text="warframe.name"></span>
+              </div>
+              <div v-if="warframe.completion == 100" class="qp-warframe-complete"></div>
+              <div class="qp-warframe-completion">
+                <div class="qp-warframe-completed" :style="`width:${warframe.completion}%;`"></div>
+              </div>
             </div>
           </div>
+        </el-col>
+      </TransitionGroup>
+    </el-row>
+    <el-row v-else>
+      <el-col>
+        <div class="qp-warframes-allcomplete">
+          <el-icon size="132" class="mdi mdi-emoticon-happy-outline" />
+          <p v-text="$t('YoucompletedallPrimeWarframes')"></p>
         </div>
       </el-col>
     </el-row>
@@ -71,6 +111,11 @@ onMounted(() => {doWarframesList()})
 </template>
 
 <style scoped>
+.qp-warframes-actions {
+  text-align: right;
+  padding: 0 20px 12px;
+}
+/* ===---=== */
 .qp-warframes-list {
   font-size: 0;
   line-height: 0;
@@ -165,5 +210,12 @@ onMounted(() => {doWarframesList()})
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+/* ===---=== */
+.qp-warframes-allcomplete {
+  font-size: 24px;
+  line-height: 120%;
+  text-align: center;
 }
 </style>

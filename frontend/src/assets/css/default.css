@@ -185,6 +185,13 @@ input:-webkit-autofill:active {
 /* ===--- MAIN --------------------------------------------------------------------=== */
 /* =================================================================================== */
 
+#qp-topbar-topnav .el-tabs__header {
+  margin-bottom: 0;
+}
+#qp-topbar-topnav .el-tabs__nav-wrap::after {
+  display: none;
+}
+
 #qp-main {
   background-color: transparent;
   grid-row: 3 / 3;

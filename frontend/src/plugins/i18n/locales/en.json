@@ -41,6 +41,7 @@
   "MeleeWeapons": "Melee Weapons",
   "Relic": "Relic",
   "Relics": "Relics",
+  "RelicsOf": "{0}'s Relics",
   "Warframe": "Warframe",
   "Warframes": "Warframes",
   "blueprint": "Blueprint",
@@ -52,5 +53,13 @@
   "Lith": "Lith",
   "Meso": "Meso",
   "Neo": "Neo",
-  "Axi": "Axi"
+  "Axi": "Axi",
+  "ShowCompleted": "Show Completed",
+  "HideCompleted": "Hide Completed",
+  "YoucompletedallPrimeWarframes": "You've completed all Prime Warframes",
+  "Settings": "Settings",
+  "ContentUnderDevelopment": "Content Under Development",
+  "ComeBackLater": "Come back later",
+  "Sharelinkcopiedtoclipboard": "Share link copied to clipboard",
+  "Share": "Share"
 }

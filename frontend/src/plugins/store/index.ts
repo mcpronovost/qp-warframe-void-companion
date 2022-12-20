@@ -3,8 +3,9 @@ import { Buffer } from "buffer";
 import { QpStoreApp } from "./storeApp";
 import { QpStoreUser } from "./storeUser";
 
-// export const API: string = "http://localhost:8000/api/v1"
-export const API: string = "https://qapikur.pythonanywhere.com/api/v1"
+// export const WEB: string = "http://localhost:8000"
+export const WEB: string = "https://qapikur.pythonanywhere.com"
+export const API: string = `${WEB}/api/v1`
 
 export const HEADERS = (rat: string|null, lang?: string) => {
     if (rat) {

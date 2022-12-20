@@ -9,29 +9,10 @@ import { API, HEADERS } from "../../plugins/store/index";
 const router = useRouter()
 
 const useStoreUser = storeUser()
-const { rat, username, name, lang } = storeToRefs(useStoreUser)
-const { updateUser } = useStoreUser
+const { rat, username, name } = storeToRefs(useStoreUser)
 
-const isLoadingNotifications = ref<boolean>(false)
-
-const doNotificationSeen = async (id: number) => {
-    isLoadingNotifications.value = true
-    let f = await fetch(`${API}/notifications/${id}/seen/`, {
-        method: "PATCH",
-        headers: HEADERS(rat.value, lang.value)
-    })
-    if (f.status === 200) {updateUser()}
-    isLoadingNotifications.value = false
-}
-
-const doNotificationAllSeen = async () => {
-    isLoadingNotifications.value = true
-    let f = await fetch(`${API}/notifications/seen/`, {
-        method: "PATCH",
-        headers: HEADERS(rat.value, lang.value)
-    })
-    if (f.status === 200) {updateUser()}
-    isLoadingNotifications.value = false
+const goToTab = (name: string) => {
+    router.push({name:name})
 }
 
 const goTo = (obj: any) => {
@@ -48,18 +29,15 @@ const goTo = (obj: any) => {
             </el-button>
         </div>
         <div id="qp-topbar-center">
-            <el-button text :disabled="$route.name=='Warframes'" @click="router.push({name:'Warframes'})">
-                <span v-text="$t('Warframes')"></span>
-            </el-button>
-            <el-button text :disabled="true" @click="router.push({name:'PrimaryWeapons'})">
-                <span v-text="$t('PrimaryWeapons')"></span>
-            </el-button>
-            <el-button text :disabled="true" @click="router.push({name:'SecondaryWeapons'})">
-                <span v-text="$t('SecondaryWeapons')"></span>
-            </el-button>
-            <el-button text :disabled="true" @click="router.push({name:'MeleeWeapons'})">
-                <span v-text="$t('MeleeWeapons')"></span>
-            </el-button>
+            <div id="qp-topbar-topnav">
+                <el-tabs v-model="$route.name" stretch @tab-change="goToTab">
+                    <el-tab-pane :label="$t('Relics')" name="Home" />
+                    <el-tab-pane :label="$t('Warframes')" name="Warframes" />
+                    <el-tab-pane :label="$t('PrimaryWeapons')" name="PrimaryWeapons" disabled />
+                    <el-tab-pane :label="$t('SecondaryWeapons')" name="SecondaryWeapons" disabled />
+                    <el-tab-pane :label="$t('MeleeWeapons')" name="MeleeWeapons" disabled />
+                </el-tabs>
+            </div>
         </div>
         <div v-if="rat" id="qp-topbar-right">
             <div class="qp-topbar-item">
@@ -102,6 +80,10 @@ const goTo = (obj: any) => {
                                 <span v-text="$t('MeleeWeapons')"></span>
                             </el-dropdown-item>
                             <el-divider />
+                            <el-dropdown-item :command="{name:'Settings'}" :disabled="$route.name=='Settings'">
+                                <span v-text="$t('Settings')"></span>
+                            </el-dropdown-item>
+                            <el-divider />
                             <el-dropdown-item :command="{name:'AuthLogout'}" :disabled="$route.name=='AuthLogout'">
                                 <span v-text="$t('Logout')"></span>
                             </el-dropdown-item>
@@ -142,19 +124,27 @@ const goTo = (obj: any) => {
         font-size: 16px;
         line-height: 100%;
         display: flex;
+        flex: 1 1 35%;
         align-items: center;
         justify-content: flex-start;
         padding: 0 0 0 12px;
     }
     /* ===--- CENTER ---=== */
-    @media (max-width: 1199px) {
-        #qp-topbar-center .el-button {
+    #qp-topbar-center {
+        flex: 0 1 200px;
+    }
+    #qp-topbar-topnav {
+        max-width: 50vw;
+    }
+    @media (max-width: 1023px) {
+        #qp-topbar-topnav {
             display: none;
         }
     }
     /* ===--- RIGHT ---=== */
     #qp-topbar-right {
         display: flex;
+        flex: 1 1 35%;
         align-items: center;
         justify-content: flex-end;
         padding: 0 12px 0 0;

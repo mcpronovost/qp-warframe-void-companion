@@ -136,6 +136,13 @@ body .el-button > span {
     text-overflow: ellipsis;
 }
 
+.el-button-group > .el-button:not(.is-disabled) {
+    background-color: transparent;
+}
+.el-button-group > .el-button:not(.is-disabled):hover {
+    background-color: #222324;
+}
+
 body .el-card,
 body .el-card.is-always-shadow {
     background-color: var(--qp-card-bg);
@@ -309,6 +316,17 @@ body .el-select-dropdown__item:hover {
 
 body .el-tabs__nav-wrap::after {
     background-color: rgba(255, 255, 255, 0.05);
+}
+body .el-tabs__item.is-disabled {
+    color: var(--qp-base-disable-color);
+}
+body .el-tabs__nav-next:not(.is-disabled):hover,
+body .el-tabs__nav-prev:not(.is-disabled):hover {
+    color: var(--qp-primary);
+}
+body .el-tabs__nav-next.is-disabled:hover,
+body .el-tabs__nav-prev.is-disabled:hover {
+    cursor: default;
 }
 
 body .el-timeline {

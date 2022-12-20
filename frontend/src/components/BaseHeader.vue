@@ -4,6 +4,10 @@ const props = defineProps({
         type: String,
         required: false
     },
+    content: {
+        type: String,
+        required: false
+    },
     pageType: {
         type: String,
         required: false
@@ -18,6 +22,9 @@ const props = defineProps({
                 <h1 class="qp-header-title">
                     <span v-text="props.title"></span>
                 </h1>
+                <div v-if="props.content" class="qp-header-content">
+                    <p v-text="props.content"></p>
+                </div>
                 <hr class="qp-header-divider" />
             </header>
         </el-col>
