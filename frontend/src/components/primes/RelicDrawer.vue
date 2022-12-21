@@ -7,20 +7,7 @@ import { useI18n } from "vue-i18n";
 import { ElMessage } from "element-plus";
 import { API, HEADERS } from "../../plugins/store/index";
 import { storeUser } from "../../plugins/store";
-import imgBlueprint from "../../assets/img/blueprint.png";
-import imgChassis from "../../assets/img/chassis.png";
-import imgNeuroptics from "../../assets/img/neuroptics.png";
-import imgSystems from "../../assets/img/systems.png";
-import imgBarrel from "../../assets/img/prime_barrel.png";
-import imgBlade from "../../assets/img/prime_blade.png";
-import imgGrip from "../../assets/img/prime_grip.png";
-import imgHandle from "../../assets/img/prime_handle.png";
-import imgLink from "../../assets/img/prime_link.png";
-import imgLowerLimb from "../../assets/img/prime_lowerlimb.png";
-import imgReceiver from "../../assets/img/prime_receiver.png";
-import imgStock from "../../assets/img/prime_stock.png";
-import imgString from "../../assets/img/prime_string.png";
-import imgUpperLimb from "../../assets/img/prime_upperlimb.png";
+import QpWeaponImage from "../primes/WeaponImage.vue";
 
 const { t } = useI18n()
 
@@ -84,20 +71,7 @@ const doComponentOwn = async (id: Number, component_type: String) => {
       <li v-for="(component, n) in props.relic.components" :key="`warframe-components-${n}`" :class="`qp-relics-drawer-components-item${readonly ? ' qp-readonly' : ''}`" @click="!readonly ? doComponentOwn(component.id, component.type) : undefined">
         <div class="qp-relics-drawer-components-item-wrapper">
           <div class="qp-relics-drawer-components-img">
-            <el-image v-if="component.component == 'blueprint'" :src="imgBlueprint" />
-            <el-image v-else-if="component.component == 'chassis'" :src="imgChassis" />
-            <el-image v-else-if="component.component == 'neuroptics'" :src="imgNeuroptics" />
-            <el-image v-else-if="component.component == 'systems'" :src="imgSystems" />
-            <el-image v-else-if="component.component == 'barrel'" :src="imgBarrel" />
-            <el-image v-else-if="component.component == 'blade'" :src="imgBlade" />
-            <el-image v-else-if="component.component == 'grip'" :src="imgGrip" />
-            <el-image v-else-if="component.component == 'handle'" :src="imgHandle" />
-            <el-image v-else-if="component.component == 'link'" :src="imgLink" />
-            <el-image v-else-if="component.component == 'lowerlimb'" :src="imgLowerLimb" />
-            <el-image v-else-if="component.component == 'receiver'" :src="imgReceiver" />
-            <el-image v-else-if="component.component == 'stock'" :src="imgStock" />
-            <el-image v-else-if="component.component == 'string'" :src="imgString" />
-            <el-image v-else-if="component.component == 'upperlimb'" :src="imgUpperLimb" />
+            <QpWeaponImage :component="component.component" />
           </div>
           <div>
             <div class="qp-relics-drawer-components-name">
