@@ -1,1 +1,0 @@
-import{d as r,g as e,c as o,w as s,f as t}from"./index-a1b3c409.js";const u=r({__name:"MeleeWeaponsView",setup(_){return(n,c)=>{const a=t("router-view"),p=t("qp-page");return e(),o(p,null,{default:s(()=>[(e(),o(a,{key:n.$route.fullPath}))]),_:1})}}});export{u as default};

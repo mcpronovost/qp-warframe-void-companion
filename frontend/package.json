@@ -1,12 +1,12 @@
 {
-  "name": "@mcpronovost/qp-frame",
-  "version": "0.1.0",
+  "name": "@mcpronovost/qp-warframe-void-companion",
+  "version": "0.2.1",
   "author": "M-C Pronovost <mcpronovostkurkiency@gmail.com> (https://github.com/mcpronovost)",
   "private": true,
   "type": "module",
   "scripts": {
     "start": "vite",
-    "build": "vite build",
+    "build": "vite build && npm version patch",
     "preview": "vite preview"
   },
   "dependencies": {

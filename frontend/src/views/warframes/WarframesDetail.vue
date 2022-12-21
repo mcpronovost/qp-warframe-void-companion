@@ -3,7 +3,7 @@ import type { TypeRelic } from "../../types/warframe";
 import { computed, reactive, ref, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useI18n } from "vue-i18n";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import { API, HEADERS } from "../../plugins/store/index";
 import { storeUser } from "../../plugins/store";
@@ -15,6 +15,7 @@ import imgSystems from "../../assets/img/systems.png";
 const { t } = useI18n()
 
 const route = useRoute()
+const router = useRouter()
 
 const useStoreUser = storeUser()
 const { rat, lang, id } = storeToRefs(useStoreUser)
@@ -72,9 +73,9 @@ const doWarframeOwn = async (id: Number, doall: Boolean = false) => {
       .then((r) => {return r})
       .catch(() => {return new Response(null,{status: 400})})
       if (f.status === 201) {
-          ElMessage.success(t("ComponentUpdated"))
+          ElMessage.success(t("ComponentsUpdated"))
           isLoadingOwning.value = false
-          doWarframeDetail(true)
+          router.push({name: "Warframes"})
       } else {
           throw f.status
       }
