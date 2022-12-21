@@ -10,11 +10,12 @@ from qp.warframe.models import (
     qpWarframe, qpWarframeComponent,
     qpPrimaryWeapon, qpPrimaryWeaponComponent,
     qpSecondaryWeapon, qpSecondaryWeaponComponent,
-    qpMeleeWeapon,
+    qpMeleeWeapon, qpMeleeWeaponComponent,
     qpRelic,
     qpWarframeRelicReward,
     qpPrimaryWeaponRelicReward,
-    qpSecondaryWeaponRelicReward
+    qpSecondaryWeaponRelicReward,
+    qpMeleeWeaponRelicReward
 )
 
 
@@ -29,16 +30,18 @@ class Command(BaseCommand):
         parser.add_argument("--warframes", action="store_true", help="To update Warframes")
         parser.add_argument("--primaryweapons", action="store_true", help="To update Primary Weapons")
         parser.add_argument("--secondaryweapons", action="store_true", help="To update Secondary Weapons")
+        parser.add_argument("--meleeweapons", action="store_true", help="To update Melee Weapons")
 
     def handle(self, *args, **options):
         print("--- Start ``Update Warframe data`` --------------")
-        print("options : ", options["warframes"])
         if options["warframes"]:
             self.qp_update_warframes()
         if options["primaryweapons"]:
             self.qp_update_weapons("Primary")
         if options["secondaryweapons"]:
             self.qp_update_weapons("Secondary")
+        if options["meleeweapons"]:
+            self.qp_update_weapons("Melee")
         print("--- End ``Update Warframe data`` ----------------")
 
     def qp_update_warframes(self):
@@ -132,6 +135,10 @@ class Command(BaseCommand):
             weapon, created = qpSecondaryWeapon.objects.get_or_create(
                 name=str(result["name"])
             )
+        elif weapontype == "Melee":
+            weapon, created = qpMeleeWeapon.objects.get_or_create(
+                name=str(result["name"])
+            )
         weapon.image_name = str(result["imageName"])
         weapon.save()
         # ===---
@@ -146,10 +153,17 @@ class Command(BaseCommand):
                     "Blueprint",
                     "Barrel",
                     "Blade",
+                    "Blades",
+                    "Chain",
+                    "Gauntlet",
                     "Grip",
+                    "Guard",
                     "Handle",
+                    "Head",
+                    "Hilt",
                     "Link",
                     "Lower Limb",
+                    "Ornament",
                     "Pouch",
                     "Receiver",
                     "Stars",
@@ -157,6 +171,7 @@ class Command(BaseCommand):
                     "String",
                     "Upper Limb"
                 ]):
+                    print(">>>>>>>>>>>>> ", component["name"])
                     continue
                 # ===--- weapon component
                 quantity = int(component["itemCount"])
@@ -171,6 +186,12 @@ class Command(BaseCommand):
                         )
                     elif weapontype == "Secondary":
                         weapon_component, created = qpSecondaryWeaponComponent.objects.get_or_create(
+                            weapon=weapon,
+                            name=component_name,
+                            quantity_count=int(i+1)
+                        )
+                    elif weapontype == "Melee":
+                        weapon_component, created = qpMeleeWeaponComponent.objects.get_or_create(
                             weapon=weapon,
                             name=component_name,
                             quantity_count=int(i+1)
@@ -204,6 +225,11 @@ class Command(BaseCommand):
                             )
                         elif weapontype == "Secondary":
                             reward, created = qpSecondaryWeaponRelicReward.objects.get_or_create(
+                                relic=relic,
+                                component=weapon_component
+                            )
+                        elif weapontype == "Melee":
+                            reward, created = qpMeleeWeaponRelicReward.objects.get_or_create(
                                 relic=relic,
                                 component=weapon_component
                             )

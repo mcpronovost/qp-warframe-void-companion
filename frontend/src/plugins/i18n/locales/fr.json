@@ -84,5 +84,12 @@
   "RemoveAll": "Tout retirer",
   "pouch": "Poche",
   "link": "Lien",
-  "stars": "Étoiles"
+  "stars": "Étoiles",
+  "ornament": "Ornement",
+  "head": "Tête",
+  "gauntlet": "Gantelet",
+  "blades": "Lames",
+  "guard": "Garde",
+  "hilt": "Quillon",
+  "chain": "Chaîne"
 }

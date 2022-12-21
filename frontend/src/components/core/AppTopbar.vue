@@ -36,8 +36,6 @@ const goTo = (obj: any) => {
                     <el-tab-pane :label="$t('Primary')" name="PrimaryWeapons" />
                     <el-tab-pane :label="$t('Secondary')" name="SecondaryWeapons" />
                     <el-tab-pane :label="$t('Melee')" name="MeleeWeapons" />
-                    <el-tab-pane :label="$t('Archwings')" name="Archwings" disabled />
-                    <el-tab-pane :label="$t('Companions')" name="Companions" disabled />
                 </el-tabs>
             </div>
         </div>

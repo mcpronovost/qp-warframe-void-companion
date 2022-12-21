@@ -84,5 +84,12 @@
   "RemoveAll": "Remove All",
   "pouch": "Pouch",
   "link": "Link",
-  "stars": "Stars"
+  "stars": "Stars",
+  "ornament": "Ornament",
+  "head": "Head",
+  "gauntlet": "Gauntlet",
+  "blades": "Blades",
+  "guard": "Guard",
+  "hilt": "Hilt",
+  "chain": "Chain"
 }

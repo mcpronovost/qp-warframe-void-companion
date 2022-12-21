@@ -65,7 +65,7 @@ class qpMeRelicsSerializer(serializers.ModelSerializer):
         try:
             request = self.context.get("request")
             if request.user.is_authenticated:
-                reward_types = ["warframes", "primary-weapons", "secondary-weapons"]
+                reward_types = ["warframes", "primary-weapons", "secondary-weapons", "melee-weapons"]
                 for reward_type in reward_types:
                     rewards = []
                     # ===---
@@ -75,6 +75,8 @@ class qpMeRelicsSerializer(serializers.ModelSerializer):
                         rewards = obj.primaryweapon_rewards.all()
                     elif reward_type == "secondary-weapons":
                         rewards = obj.secondaryweapon_rewards.all()
+                    elif reward_type == "melee-weapons":
+                        rewards = obj.meleeweapon_rewards.all()
                     # ===---
                     for reward in rewards:
                         name = "?"
@@ -83,7 +85,7 @@ class qpMeRelicsSerializer(serializers.ModelSerializer):
                         if reward_type == "warframes":
                             name = str(reward.component.warframe)
                             warframe_name = name
-                        elif reward_type in ["primary-weapons", "secondary-weapons"]:
+                        elif reward_type in ["primary-weapons", "secondary-weapons", "melee-weapons"]:
                             name = str(reward.component.weapon)
                             weapon_name = name
                         # ===---
@@ -117,7 +119,7 @@ class qpMeRelicsSerializer(serializers.ModelSerializer):
         try:
             request = self.context.get("request")
             if request.user.is_authenticated:
-                reward_types = ["warframes", "primary-weapons", "secondary-weapons"]
+                reward_types = ["warframes", "primary-weapons", "secondary-weapons", "melee-weapons"]
                 for reward_type in reward_types:
                     rewards = []
                     # ===---
@@ -127,6 +129,8 @@ class qpMeRelicsSerializer(serializers.ModelSerializer):
                         rewards = obj.primaryweapon_rewards.all()
                     elif reward_type == "secondary-weapons":
                         rewards = obj.secondaryweapon_rewards.all()
+                    elif reward_type == "melee-weapons":
+                        rewards = obj.meleeweapon_rewards.all()
                     # ===---
                     for reward in rewards:
                         if result["gold"] == True and result["silver"] == True and result["gold"] == True:
