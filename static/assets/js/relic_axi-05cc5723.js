@@ -1,1 +1,0 @@
-const s="/static/assets/img/relic_lith-5b7e387f.png",i="/static/assets/img/relic_meso-a11281ee.png",e="/static/assets/img/relic_neo-7caabf00.png",t="/static/assets/img/relic_axi-a32307ff.png";export{i as a,e as b,t as c,s as i};

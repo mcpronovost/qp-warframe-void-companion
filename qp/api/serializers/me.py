@@ -57,7 +57,7 @@ class qpMeRelicsSerializer(serializers.ModelSerializer):
                                 str(reward.component.warframe),
                                 str(reward.component.get_name_display())
                             ),
-                            "type": "warframe",
+                            "type": "warframes",
                             "warframe": str(reward.component.warframe),
                             "component": str(reward.component.name),
                             "percent": int(round(reward.percent * 100))
@@ -73,7 +73,7 @@ class qpMeRelicsSerializer(serializers.ModelSerializer):
                                 str(reward.component.weapon),
                                 str(reward.component.get_name_display())
                             ),
-                            "type": "weapon",
+                            "type": "primary-weapons",
                             "weapon": str(reward.component.weapon),
                             "component": str(reward.component.name),
                             "percent": int(round(reward.percent * 100))

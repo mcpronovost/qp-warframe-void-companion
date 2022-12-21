@@ -1,27 +1,19 @@
 <script setup lang="ts">
 import type { TypeRelic } from "../types/warframe";
 import { ref, onMounted, onUnmounted } from "vue";
-import { storeToRefs } from "pinia";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 import { ElMessage } from "element-plus";
-import { API, HEADERS } from "../plugins/store/index";
-import { storeUser } from "../plugins/store";
+import { API } from "../plugins/store/index";
+import qpRelicDrawer from "../components/primes/RelicDrawer.vue";
 import imgRelicLith from "../assets/img/relic_lith.png";
 import imgRelicMeso from "../assets/img/relic_meso.png";
 import imgRelicNeo from "../assets/img/relic_neo.png";
 import imgRelicAxi from "../assets/img/relic_axi.png";
-import imgBlueprint from "../assets/img/blueprint.png";
-import imgChassis from "../assets/img/chassis.png";
-import imgNeuroptics from "../assets/img/neuroptics.png";
-import imgSystems from "../assets/img/systems.png";
 
 const { t } = useI18n()
 
 const route = useRoute()
-
-const useStoreUser = storeUser()
-const { rat, lang } = storeToRefs(useStoreUser)
 
 const isLoading = ref<boolean>(false)
 const isLoadingUpdate = ref<boolean>(false)
@@ -38,6 +30,7 @@ const relics_total = ref<number>(0)
 const relics_size = ref<number>(1)
 const relics_page = ref<number>(1)
 
+const currentEra = ref<string|null>(null)
 const winWidth = ref(window.innerWidth)
 
 const doRelicsList = async (page: string|null, era: string|null, update = false) => {
@@ -47,6 +40,8 @@ const doRelicsList = async (page: string|null, era: string|null, update = false)
     // ===---
     let query = page ? `?page=${page}` : "?page=1"
     query += era ? `&era=${era}` : ""
+    // ===---
+    currentEra.value = era
     // ===---
     try {
         let f = await fetch(`${API}/users/${route.params.slug}/relics/${query}`, {
@@ -73,14 +68,6 @@ const doRelicsList = async (page: string|null, era: string|null, update = false)
         isLoading.value = false
         isLoadingUpdate.value = false
     }
-}
-
-const sortByEra = (relics: Array<TypeRelic>, era: String) => {
-  let result = relics.filter((r) => {
-    return r.era == era
-  })
-  if (result != undefined && result.length) return result
-  return []
 }
 
 const openDrawerRelic = (relic: TypeRelic|null = null) => {
@@ -157,30 +144,7 @@ onUnmounted(() => {
         <template #header>
           <span v-if="dataDrawerRelic" class="el-drawer__title" v-text="`${dataDrawerRelic.era} ${dataDrawerRelic.name}`"></span>
         </template>
-        <div>
-          <ul v-if="dataDrawerRelic?.components" class="qp-relics-drawer-components-list">
-            <li v-for="(component, n) in dataDrawerRelic.components" :key="`warframe-components-${n}`" class="qp-relics-drawer-components-item">
-              <div class="qp-relics-drawer-components-item-wrapper">
-                <div class="qp-relics-drawer-components-img">
-                  <el-image v-if="component.component == 'blueprint'" :src="imgBlueprint" />
-                  <el-image v-else-if="component.component == 'chassis'" :src="imgChassis" />
-                  <el-image v-else-if="component.component == 'neuroptics'" :src="imgNeuroptics" />
-                  <el-image v-else-if="component.component == 'systems'" :src="imgSystems" />
-                </div>
-                <div>
-                  <div class="qp-relics-drawer-components-name">
-                    <span v-text="component.name"></span>
-                  </div>
-                  <div class="qp-relics-drawer-rarities">
-                    <span v-if="component.percent < 10" class="qp-relics-drawer-rarities-gold"></span>
-                    <span v-else-if="component.percent > 9 && component.percent < 20" class="qp-relics-drawer-rarities-silver"></span>
-                    <span v-else-if="component.percent > 19" class="qp-relics-drawer-rarities-bronze"></span>
-                  </div>
-                </div>
-              </div>
-            </li>
-          </ul>
-        </div>
+        <qpRelicDrawer v-if="dataDrawerRelic" :relic="dataDrawerRelic" @click="closeDrawerRelic(); doRelicsList(null, currentEra, true);" />
       </el-drawer>
     </div>
     <qp-notfound v-else-if="!isLoading" />

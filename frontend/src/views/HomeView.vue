@@ -7,23 +7,11 @@ import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import { WEB, API, HEADERS } from "../plugins/store/index";
 import { storeUser } from "../plugins/store";
+import qpRelicDrawer from "../components/primes/RelicDrawer.vue";
 import imgRelicLith from "../assets/img/relic_lith.png";
 import imgRelicMeso from "../assets/img/relic_meso.png";
 import imgRelicNeo from "../assets/img/relic_neo.png";
 import imgRelicAxi from "../assets/img/relic_axi.png";
-import imgBlueprint from "../assets/img/blueprint.png";
-import imgChassis from "../assets/img/chassis.png";
-import imgNeuroptics from "../assets/img/neuroptics.png";
-import imgSystems from "../assets/img/systems.png";
-import imgBarrel from "../assets/img/prime_barrel.png";
-import imgBlade from "../assets/img/prime_blade.png";
-import imgGrip from "../assets/img/prime_grip.png";
-import imgHandle from "../assets/img/prime_handle.png";
-import imgLowerLimb from "../assets/img/prime_lowerlimb.png";
-import imgReceiver from "../assets/img/prime_receiver.png";
-import imgStock from "../assets/img/prime_stock.png";
-import imgString from "../assets/img/prime_string.png";
-import imgUpperLimb from "../assets/img/prime_upperlimb.png";
 
 const { t } = useI18n()
 
@@ -34,9 +22,7 @@ const { rat, lang, slug } = storeToRefs(useStoreUser)
 
 const isLoading = ref<boolean>(false)
 const isLoadingUpdate = ref<boolean>(false)
-const isLoadingOwning = ref<boolean>(false)
 const hasError = ref<string|null>(null)
-const hasErrorOwning = ref<string|null>(null)
 
 const showDrawerRelic = ref<boolean>(false)
 const dataDrawerRelic = ref<TypeRelic|null>(null)
@@ -48,6 +34,7 @@ const relics_page = ref<number>(1)
 const relics_size = ref<number>(1)
 const relics_total = ref<number>(0)
 
+const currentEra = ref<string|null>(null)
 const winWidth = ref(window.innerWidth)
 
 const doRelicsList = async (page: string|null, era: string|null, update = false) => {
@@ -57,6 +44,8 @@ const doRelicsList = async (page: string|null, era: string|null, update = false)
     // ===---
     let query = page ? `?page=${page}` : "?page=1"
     query += era ? `&era=${era}` : ""
+    // ===---
+    currentEra.value = era
     // ===---
     try {
         let f = await fetch(`${API}/me/relics/${query}`, {
@@ -85,22 +74,6 @@ const doRelicsList = async (page: string|null, era: string|null, update = false)
     }
 }
 
-const sortByEra = (relics: Array<TypeRelic>, era: String) => {
-  let result = relics.filter((r) => {
-    return r.era == era
-  })
-  if (result != undefined && result.length) return result
-  return []
-}
-
-const doRelicsSortByEra = (era: null|string = null) => {
-  if (era) {
-    listRelics.value = sortByEra(listRelicsOriginal.value, era)
-  } else {
-    listRelics.value = listRelicsOriginal.value
-  }
-}
-
 const openDrawerRelic = (relic: TypeRelic|null = null) => {
   dataDrawerRelic.value = relic
   showDrawerRelic.value = true
@@ -115,39 +88,7 @@ const doUpdateWinWidth = () => {
   winWidth.value = window.innerWidth
 }
 
-const doWarframeOwn = async (id: Number) => {
-  isLoadingOwning.value = true
-  hasErrorOwning.value = null
-  // ===---
-  let data = new FormData()
-  data.append("id", id.toString())
-  // ===---
-  try {
-      let f = await fetch(`${API}/me/warframes/components/create/`, {
-          method: "POST",
-          body: data,
-          headers: HEADERS(rat.value, lang.value)
-      })
-      .then((r) => {return r})
-      .catch(() => {return new Response(null,{status: 400})})
-      if (f.status === 201) {
-          ElMessage.success(t("ComponentUpdated"))
-          isLoadingOwning.value = false
-          closeDrawerRelic()
-          doRelicsList(null, null)
-      } else {
-          throw f.status
-      }
-  } catch (e) {
-      if (e === 401) ElMessage.error("not authorized")
-      else ElMessage.error(t("AnErrorOccurred"))
-      hasErrorOwning.value = `${e}`
-      isLoadingOwning.value = false
-  }
-}
-
 const doCopyShareLink = () => {
-  console.log(slug)
   navigator.clipboard.writeText(`${WEB}/u/${slug.value}`);
   ElMessage.success(t("Sharelinkcopiedtoclipboard"))
 }
@@ -225,39 +166,7 @@ onUnmounted(() => {
         <template #header>
           <span v-if="dataDrawerRelic" class="el-drawer__title" v-text="`${dataDrawerRelic.era} ${dataDrawerRelic.name}`"></span>
         </template>
-        <div>
-          <ul v-if="dataDrawerRelic?.components" v-loading="isLoadingOwning" class="qp-relics-drawer-components-list">
-            <li v-for="(component, n) in dataDrawerRelic.components" :key="`warframe-components-${n}`" class="qp-relics-drawer-components-item" @click="component.type == 'warframe' ? doWarframeOwn(component.id) : ''">
-              <div class="qp-relics-drawer-components-item-wrapper">
-                <div class="qp-relics-drawer-components-img">
-                  <el-image v-if="component.component == 'blueprint'" :src="imgBlueprint" />
-                  <el-image v-else-if="component.component == 'chassis'" :src="imgChassis" />
-                  <el-image v-else-if="component.component == 'neuroptics'" :src="imgNeuroptics" />
-                  <el-image v-else-if="component.component == 'systems'" :src="imgSystems" />
-                  <el-image v-else-if="component.component == 'barrel'" :src="imgBarrel" />
-                  <el-image v-else-if="component.component == 'blade'" :src="imgBlade" />
-                  <el-image v-else-if="component.component == 'grip'" :src="imgGrip" />
-                  <el-image v-else-if="component.component == 'handle'" :src="imgHandle" />
-                  <el-image v-else-if="component.component == 'lowerlimb'" :src="imgLowerLimb" />
-                  <el-image v-else-if="component.component == 'receiver'" :src="imgReceiver" />
-                  <el-image v-else-if="component.component == 'stock'" :src="imgStock" />
-                  <el-image v-else-if="component.component == 'string'" :src="imgString" />
-                  <el-image v-else-if="component.component == 'upperlimb'" :src="imgUpperLimb" />
-                </div>
-                <div>
-                  <div class="qp-relics-drawer-components-name">
-                    <span v-text="component.name"></span>
-                  </div>
-                  <div class="qp-relics-drawer-rarities">
-                    <span v-if="component.percent < 10" class="qp-relics-drawer-rarities-gold"></span>
-                    <span v-else-if="component.percent > 9 && component.percent < 20" class="qp-relics-drawer-rarities-silver"></span>
-                    <span v-else-if="component.percent > 19" class="qp-relics-drawer-rarities-bronze"></span>
-                  </div>
-                </div>
-              </div>
-            </li>
-          </ul>
-        </div>
+        <qpRelicDrawer v-if="dataDrawerRelic" :relic="dataDrawerRelic" @click="closeDrawerRelic(); doRelicsList(null, currentEra, true);" />
       </el-drawer>
     </div>
     <qp-notfound v-else-if="!isLoading" />
@@ -363,85 +272,6 @@ onUnmounted(() => {
   background-color: #818181;
 }
 .qp-relics-rarities > span.qp-relics-rarities-bronze {
-  background-color: #99532b;
-}
-/* ===---=== */
-.qp-relics-drawer-components-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-.qp-relics-drawer-components-item {
-  background-color: var(--qp-card-bg);
-  border: 1px solid var(--qp-card-bg-light-1);
-  box-sizing: border-box;
-  list-style: none;
-  display: block;
-  position: relative;
-  padding: 0;
-  margin: 0 0 10px 0;
-}
-.qp-relics-drawer-components-item:hover {
-  border-color: var(--qp-card-bg-light-2);
-  cursor: pointer;
-}
-.qp-relics-drawer-components-item-wrapper {
-  box-sizing: border-box;
-  overflow: hidden;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  height: 100%;
-  min-height: 104px;
-  position: relative;
-  padding: 0 2px 12px 0;
-  margin: 0;
-}
-.qp-relics-drawer-components-item-wrapper::after {
-  content: "";
-  background-color: var(--qp-primary);
-  width: 0;
-  height: 3px;
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  transition: width 0.3s;
-}
-.qp-relics-drawer-components-item:hover .qp-relics-drawer-components-item-wrapper::after {
-  width: 100%;
-}
-.qp-relics-drawer-components-img {
-  flex: 0 0 80px;
-  width: 80px;
-  height: 80px;
-  padding: 12px 12px 0 0;
-}
-.qp-relics-drawer-components-name {
-  font-size: 16px;
-  line-height: 120%;
-  padding: 12px 4px 2px 0;
-}
-.qp-relics-drawer-rarities {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-}
-.qp-relics-drawer-rarities > span {
-  background-color: var(--qp-primary);
-  display: block;
-  width: 8px;
-  height: 8px;
-  opacity: 0.7;
-  margin: 4px;
-}
-.qp-relics-drawer-rarities > span.qp-relics-drawer-rarities-gold {
-  background-color: #998b2b;
-}
-.qp-relics-drawer-rarities > span.qp-relics-drawer-rarities-silver {
-  background-color: #818181;
-}
-.qp-relics-drawer-rarities > span.qp-relics-drawer-rarities-bronze {
   background-color: #99532b;
 }
 </style>

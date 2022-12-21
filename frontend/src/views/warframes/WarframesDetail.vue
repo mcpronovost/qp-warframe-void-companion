@@ -144,16 +144,16 @@ onMounted(() => {doWarframeDetail()})
 <template>
   <div v-if="!isLoading && !hasError && warframe" class="qp-container">
     <qp-header :title="warframe.name" page-type="warframe" />
-    <div class="qp-warframes-actions">
-      <div class="qp-warframes-actions-extra">
-        <el-button-group>
-          <el-button v-if="warframe.completion < 100" @click="doWarframeOwn(0, true)"><span v-text="$t('CompleteAll')"></span></el-button>
-          <el-button v-else @click="doWarframeUnown(0, true)"><span v-text="$t('RemoveAll')"></span></el-button>
-        </el-button-group>
-      </div>
-    </div>
     <el-row class="qp-warframes-detail">
       <el-col :span="24" :md="14" class="qp-warframes-detail-info">
+        <div class="qp-warframes-actions">
+          <div class="qp-warframes-actions-extra">
+            <el-button-group>
+              <el-button v-if="warframe.completion < 100" @click="doWarframeOwn(0, true)"><span v-text="$t('CompleteAll')"></span></el-button>
+              <el-button v-else @click="doWarframeUnown(0, true)"><span v-text="$t('RemoveAll')"></span></el-button>
+            </el-button-group>
+          </div>
+        </div>
         <ul v-loading="isLoadingOwning" class="qp-warframes-detail-components-list">
           <li v-for="(component, n) in warframe.components" :key="`warframe-components-${n}`" :class="`qp-warframes-detail-components-item${component.is_owned ? ' qp-isowned' : ''}`" @click="component.is_owned ? doWarframeUnown(component.id) : doWarframeOwn(component.id)">
             <div class="qp-warframes-detail-components-item-wrapper">
@@ -218,7 +218,7 @@ onMounted(() => {doWarframeDetail()})
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  padding: 0 20px 20px;
+  padding: 0 0 20px;
 }
 .qp-warframes-actions-extra {
   text-align: left;
@@ -253,7 +253,7 @@ onMounted(() => {doWarframeDetail()})
   height: 100%;
   min-height: 104px;
   position: relative;
-  padding: 0 100px 0 0;
+  padding: 0;
   margin: 0;
 }
 .qp-warframes-detail-components-item-wrapper::after {

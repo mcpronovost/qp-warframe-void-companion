@@ -145,7 +145,7 @@ const goTo = (obj: any) => {
         max-width: 50vw;
     }
     @media (max-width: 1023px) {
-        #qp-topbar-topnav {
+        #qp-topbar-center {
             display: none;
         }
     }

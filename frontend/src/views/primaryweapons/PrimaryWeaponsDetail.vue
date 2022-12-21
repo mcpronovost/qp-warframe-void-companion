@@ -150,16 +150,16 @@ onMounted(() => {doWeaponDetail()})
 <template>
   <div v-if="!isLoading && !hasError && weapon" class="qp-container">
     <qp-header :title="weapon.name" page-type="weapon" />
-    <div class="qp-weapons-actions">
-      <div class="qp-weapons-actions-extra">
-        <el-button-group>
-          <el-button v-if="weapon.completion < 100" @click="doWeaponOwn(0, true)"><span v-text="$t('CompleteAll')"></span></el-button>
-          <el-button v-else @click="doWeaponUnown(0, true)"><span v-text="$t('RemoveAll')"></span></el-button>
-        </el-button-group>
-      </div>
-    </div>
     <el-row class="qp-weapons-detail">
       <el-col :span="24" :md="14" class="qp-weapons-detail-info">
+        <div class="qp-weapons-actions">
+          <div class="qp-weapons-actions-extra">
+            <el-button-group>
+              <el-button v-if="weapon.completion < 100" @click="doWeaponOwn(0, true)"><span v-text="$t('CompleteAll')"></span></el-button>
+              <el-button v-else @click="doWeaponUnown(0, true)"><span v-text="$t('RemoveAll')"></span></el-button>
+            </el-button-group>
+          </div>
+        </div>
         <ul v-loading="isLoadingOwning" class="qp-weapons-detail-components-list">
           <li v-for="(component, n) in weapon.components" :key="`weapon-components-${n}`" :class="`qp-weapons-detail-components-item${component.is_owned ? ' qp-isowned' : ''}`" @click="component.is_owned ? doWeaponUnown(component.id) : doWeaponOwn(component.id)">
             <div class="qp-weapons-detail-components-item-wrapper">
@@ -230,7 +230,7 @@ onMounted(() => {doWeaponDetail()})
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  padding: 0 20px 20px;
+  padding: 0 0 20px;
 }
 .qp-weapons-actions-extra {
   text-align: left;
@@ -265,7 +265,7 @@ onMounted(() => {doWeaponDetail()})
   height: 100%;
   min-height: 104px;
   position: relative;
-  padding: 0 100px 0 0;
+  padding: 0;
   margin: 0;
 }
 .qp-weapons-detail-components-item-wrapper::after {

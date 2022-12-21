@@ -19,4 +19,9 @@
   height: 100%;
   position: relative;
 }
+#qp-mainview {
+    overflow-x: hidden;
+    grid-row: 1 / 2;
+    height: calc(100vh - 49px);
+}
 </style>
