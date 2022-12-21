@@ -6,6 +6,9 @@ import i18n from "../i18n";
 
 import { routeAuth } from "./routeAuth";
 import { routeWarframes } from "./routeWarframes";
+import { routePrimaryWeapons } from "./routePrimaryWeapons";
+import { routeSecondaryWeapons } from "./routeSecondaryWeapons";
+import { routeMeleeWeapons } from "./routeMeleeWeapons";
 
 const { t } = i18n.global;
 
@@ -25,6 +28,9 @@ const routes = [
   },
   ...routeAuth,
   ...routeWarframes,
+  ...routePrimaryWeapons,
+  ...routeSecondaryWeapons,
+  ...routeMeleeWeapons,
   {
     path: "/settings",
     name: "Settings",
@@ -66,9 +72,11 @@ router.beforeEach((to, from, next) => {
     const useStoreApp = storeApp()
     const { updateIsLoading } = useStoreApp
     const useStoreUser = storeUser()
-    const { updateUser, is_completed } = useStoreUser
+    const { doUpdateUser, last, is_completed } = useStoreUser
     updateIsLoading(true)
-    updateUser()
+    if (new Date().getTime() - last > 320000) {
+      doUpdateUser()
+    }
     next()
 })
 

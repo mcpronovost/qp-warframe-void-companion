@@ -1,18 +1,25 @@
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
-from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, DestroyAPIView
+from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView, CreateAPIView, DestroyAPIView
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
+from django.db.models import Q
+from django.http import QueryDict
 
-from qp.warframe.models import qpWarframeComponent, qpRelic
-from qp.companion.models import qpUserWarframeComponent
-from qp.api.serializers.me import qpMeSerializer, qpMeWarframeComponentsSerializer, qpMeRelicsSerializer
+from qp.warframe.models import qpWarframeComponent, qpPrimaryWeaponComponent, qpRelic
+from qp.companion.models import qpUserWarframeComponent, qpUserPrimaryWeaponComponent
+from qp.api.serializers.me import (
+    qpMeSerializer,
+    qpMeWarframeComponentsSerializer,
+    qpMePrimaryWeaponComponentsSerializer,
+    qpMeRelicsSerializer
+)
 
 
 User = get_user_model()
 
 
-class qpMeView(RetrieveAPIView):
+class qpMeView(RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = User.objects.all()
     serializer_class = qpMeSerializer
@@ -24,6 +31,13 @@ class qpMeView(RetrieveAPIView):
             print("Error on qpMeView : ", e)
         return None
 
+    def patch(self, request, *args, **kwargs):
+        instance = self.get_object()
+        user = request.user
+        if user is not None and user.is_authenticated and user.profile and instance.user == user:
+            return self.partial_update(request, *args, **kwargs)
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
 
 class qpMeWarframeComponentsCreateView(CreateAPIView):
     permission_classes = [IsAuthenticated]
@@ -32,17 +46,48 @@ class qpMeWarframeComponentsCreateView(CreateAPIView):
     lookup_field = "pk"
 
     def post(self, request, *args, **kwargs):
-        pk = int(request.data.get("id"))
-        already_one = qpUserWarframeComponent.objects.filter(
-            user=request.user,
-            component__pk=pk
-        ).first()
-        if already_one is not None:
-            return Response(status=status.HTTP_200_OK)
-        return self.create(request, *args, **kwargs)
+        pk = request.data.get("id", None)
+        if pk is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        if "," not in pk:
+            already_one = qpUserWarframeComponent.objects.filter(
+                user=request.user,
+                component__pk=pk
+            ).first()
+            if already_one is not None:
+                return Response(status=status.HTTP_200_OK)
+            return self.create(request, *args, **kwargs)
+        elif "," in pk:
+            return self.create_multiple(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def perform_create(self, serializer):
         pk = int(self.request.data.get("id"))
+        component = qpWarframeComponent.objects.filter(
+            pk=pk
+        ).first()
+        serializer.save(user=self.request.user, component=component)
+
+    def create_multiple(self, request, *args, **kwargs):
+        component_ids = request.data.get("id", "")
+        for component_id in component_ids.split(","):
+            already_one = qpUserWarframeComponent.objects.filter(
+                user=request.user,
+                component__pk=component_id
+            ).first()
+            if already_one is not None:
+                continue
+            query_dict = QueryDict("", mutable=True)
+            query_dict.update({"id": component_id})
+            serializer = self.get_serializer(data=query_dict)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create_multiple(serializer, component_id)
+            headers = self.get_success_headers(serializer.data)
+        return Response({}, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create_multiple(self, serializer, component_id):
+        pk = int(component_id)
         component = qpWarframeComponent.objects.filter(
             pk=pk
         ).first()
@@ -57,14 +102,109 @@ class qpMeWarframeComponentsDeleteView(DestroyAPIView):
 
     def destroy(self, request, *args, **kwargs):
         pk = int(kwargs["pk"])
-        instance = qpUserWarframeComponent.objects.filter(
-            user=self.request.user,
-            component__pk=pk
-        ).first()
-        if instance is not None:
-            self.perform_destroy(instance)
+        if pk > 0:
+            instance = qpUserWarframeComponent.objects.filter(
+                user=self.request.user,
+                component__pk=pk
+            ).first()
+            if instance is not None:
+                self.perform_destroy(instance)
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        else:
+            component_ids = request.data.get("ids", "")
+            for component_id in component_ids.split(","):
+                instance = qpUserWarframeComponent.objects.filter(
+                    user=self.request.user,
+                    component__pk=int(component_id)
+                ).first()
+                if instance is not None:
+                    self.perform_destroy(instance)
             return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
+class qpMePrimaryWeaponComponentsCreateView(CreateAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = qpUserPrimaryWeaponComponent.objects.all()
+    serializer_class = qpMePrimaryWeaponComponentsSerializer
+    lookup_field = "pk"
+
+    def post(self, request, *args, **kwargs):
+        pk = request.data.get("id", None)
+        if pk is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        if "," not in pk:
+            already_one = qpUserPrimaryWeaponComponent.objects.filter(
+                user=request.user,
+                component__pk=pk
+            ).first()
+            if already_one is not None:
+                return Response(status=status.HTTP_200_OK)
+            return self.create(request, *args, **kwargs)
+        elif "," in pk:
+            return self.create_multiple(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    def perform_create(self, serializer):
+        pk = int(self.request.data.get("id"))
+        component = qpPrimaryWeaponComponent.objects.filter(
+            pk=pk
+        ).first()
+        serializer.save(user=self.request.user, component=component)
+
+    def create_multiple(self, request, *args, **kwargs):
+        component_ids = request.data.get("id", "")
+        for component_id in component_ids.split(","):
+            already_one = qpUserPrimaryWeaponComponent.objects.filter(
+                user=request.user,
+                component__pk=component_id
+            ).first()
+            if already_one is not None:
+                continue
+            query_dict = QueryDict("", mutable=True)
+            query_dict.update({"id": component_id})
+            serializer = self.get_serializer(data=query_dict)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create_multiple(serializer, component_id)
+            headers = self.get_success_headers(serializer.data)
+        return Response({}, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create_multiple(self, serializer, component_id):
+        pk = int(component_id)
+        component = qpPrimaryWeaponComponent.objects.filter(
+            pk=pk
+        ).first()
+        serializer.save(user=self.request.user, component=component)
+
+
+class qpMePrimaryWeaponComponentsDeleteView(DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = qpUserPrimaryWeaponComponent.objects.all()
+    serializer_class = qpMePrimaryWeaponComponentsSerializer
+    lookup_field = "pk"
+
+    def destroy(self, request, *args, **kwargs):
+        pk = int(kwargs["pk"])
+        if pk > 0:
+            instance = qpUserPrimaryWeaponComponent.objects.filter(
+                user=self.request.user,
+                component__pk=pk
+            ).first()
+            if instance is not None:
+                self.perform_destroy(instance)
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        else:
+            component_ids = request.data.get("ids", "")
+            for component_id in component_ids.split(","):
+                instance = qpUserPrimaryWeaponComponent.objects.filter(
+                    user=self.request.user,
+                    component__pk=int(component_id)
+                ).first()
+                if instance is not None:
+                    self.perform_destroy(instance)
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class qpMeRelicsListView(ListAPIView):
@@ -97,13 +237,18 @@ class qpMeRelicsListView(ListAPIView):
         era = request.GET.get("era", None)
         try:
             if request.user.is_authenticated:
-                owned_warframe_components = request.user.warframe_components.all()
                 unowned_warframe_components = qpWarframeComponent.objects.exclude(
-                    user_components__in=owned_warframe_components
+                    user_components__in=request.user.warframe_components.all()
                 )
+                unowned_primaryweapon_components = qpPrimaryWeaponComponent.objects.exclude(
+                    user_components__in=request.user.primaryweapon_components.all()
+                )
+                # ===---
                 all_relics = qpRelic.objects.filter(
-                    warframe_rewards__component__in=unowned_warframe_components
+                    Q(warframe_rewards__component__in=unowned_warframe_components) |
+                    Q(primaryweapon_rewards__component__in=unowned_primaryweapon_components)
                 )
+                # ===---
                 if era is not None:
                     all_relics = all_relics.filter(
                         era=era

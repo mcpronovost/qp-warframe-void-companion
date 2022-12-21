@@ -197,7 +197,7 @@ MANAGERS = [
 ]
 
 # Used only for error messages
-SERVER_EMAIL = "noreply@qpframe.ca"
+SERVER_EMAIL = "mcpronovostkurkiency@gmail.com"
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.mandrillapp.com"
@@ -205,8 +205,8 @@ EMAIL_HOST_USER = "mcote@d-modules.com"
 EMAIL_HOST_PASSWORD = "yG5xY1l21FZ4UOOk-Hgd2A"
 EMAIL_PORT = 587
 
-DEFAULT_FROM_EMAIL = "noreply@qpframe.ca"
-DEFAULT_TO_EMAIL = "info@qpframe.ca"
+DEFAULT_FROM_EMAIL = "noreply@warframevoidcompanion.ca"
+DEFAULT_TO_EMAIL = "mcpronovostkurkiency@gmail.com"
 
 # =============================================================================
 # Static files (CSS, JavaScript, Images)

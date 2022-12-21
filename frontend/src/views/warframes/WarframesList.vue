@@ -11,7 +11,7 @@ const { t } = useI18n()
 
 const useStoreUser = storeUser()
 const { rat, lang, hide_completed_warframes } = storeToRefs(useStoreUser)
-const { updateHideCompletedWarframes } = useStoreUser
+const { doUpdateHideCompletedWarframes } = useStoreUser
 
 const isLoading = ref<boolean>(false)
 const hasError = ref<string|null>(null)
@@ -58,12 +58,12 @@ const doFormatWarframesList = (hide: Boolean = false) => {
 }
 
 const showCompletedWarframes = () => {
-  updateHideCompletedWarframes(false)
+  doUpdateHideCompletedWarframes(false)
   listWarframes.value = doFormatWarframesList(false)
 }
 
 const hideCompletedWarframes = () => {
-  updateHideCompletedWarframes(true)
+  doUpdateHideCompletedWarframes(true)
   listWarframes.value = doFormatWarframesList(true)
 }
 
@@ -125,6 +125,7 @@ onMounted(() => {doWarframesList()})
   list-style: none;
   display: block;
   flex: 0 1 20%;
+  height: 100%;
   padding: 0;
   margin: 0;
 }

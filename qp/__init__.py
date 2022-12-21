@@ -1,4 +1,4 @@
-__title__ = "qpFrame"
+__title__ = "Warframe Void Companion"
 __version__ = "0.1.0"
 __author__ = "M-C Pronovost"
 __license__ = "UNLICENSED"

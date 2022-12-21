@@ -15,6 +15,15 @@ import imgBlueprint from "../assets/img/blueprint.png";
 import imgChassis from "../assets/img/chassis.png";
 import imgNeuroptics from "../assets/img/neuroptics.png";
 import imgSystems from "../assets/img/systems.png";
+import imgBarrel from "../assets/img/prime_barrel.png";
+import imgBlade from "../assets/img/prime_blade.png";
+import imgGrip from "../assets/img/prime_grip.png";
+import imgHandle from "../assets/img/prime_handle.png";
+import imgLowerLimb from "../assets/img/prime_lowerlimb.png";
+import imgReceiver from "../assets/img/prime_receiver.png";
+import imgStock from "../assets/img/prime_stock.png";
+import imgString from "../assets/img/prime_string.png";
+import imgUpperLimb from "../assets/img/prime_upperlimb.png";
 
 const { t } = useI18n()
 
@@ -35,9 +44,9 @@ const dataDrawerRelic = ref<TypeRelic|null>(null)
 const listRelicsOriginal = ref<Array<any>>([])
 const listRelics = ref<Array<any>>([])
   
-const relics_total = ref<number>(0)
-const relics_size = ref<number>(1)
 const relics_page = ref<number>(1)
+const relics_size = ref<number>(1)
+const relics_total = ref<number>(0)
 
 const winWidth = ref(window.innerWidth)
 
@@ -225,6 +234,15 @@ onUnmounted(() => {
                   <el-image v-else-if="component.component == 'chassis'" :src="imgChassis" />
                   <el-image v-else-if="component.component == 'neuroptics'" :src="imgNeuroptics" />
                   <el-image v-else-if="component.component == 'systems'" :src="imgSystems" />
+                  <el-image v-else-if="component.component == 'barrel'" :src="imgBarrel" />
+                  <el-image v-else-if="component.component == 'blade'" :src="imgBlade" />
+                  <el-image v-else-if="component.component == 'grip'" :src="imgGrip" />
+                  <el-image v-else-if="component.component == 'handle'" :src="imgHandle" />
+                  <el-image v-else-if="component.component == 'lowerlimb'" :src="imgLowerLimb" />
+                  <el-image v-else-if="component.component == 'receiver'" :src="imgReceiver" />
+                  <el-image v-else-if="component.component == 'stock'" :src="imgStock" />
+                  <el-image v-else-if="component.component == 'string'" :src="imgString" />
+                  <el-image v-else-if="component.component == 'upperlimb'" :src="imgUpperLimb" />
                 </div>
                 <div>
                   <div class="qp-relics-drawer-components-name">

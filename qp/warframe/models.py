@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+
 class qpWarframe(models.Model):
     name = models.CharField(
         verbose_name=_("Name"),
@@ -24,6 +25,7 @@ class qpWarframe(models.Model):
         return "%s" % (
             str(self.name)
         )
+
 
 class qpWarframeComponent(models.Model):
     CHOIX_COMPONENTS = [
@@ -56,6 +58,122 @@ class qpWarframeComponent(models.Model):
     def __str__(self):
         return "%s - %s" % (
             str(self.warframe.name),
+            str(self.get_name_display())
+        )
+
+
+class qpPrimaryWeapon(models.Model):
+    name = models.CharField(
+        verbose_name=_("Name"),
+        max_length=120,
+        blank=False,
+        null=False
+    )
+    image_name = models.CharField(
+        verbose_name=_("Image Name"),
+        max_length=250,
+        blank=True,
+        null=True
+    )
+
+    class Meta:
+        verbose_name = _("Primary Weapon")
+        verbose_name_plural = _("Primary Weapons")
+        ordering = ["name"]
+    
+    def __str__(self):
+        return "%s" % (
+            str(self.name)
+        )
+
+
+class qpPrimaryWeaponComponent(models.Model):
+    CHOIX_COMPONENTS = [
+        ("blueprint", _("Blueprint")),
+        ("barrel", _("Barrel")),
+        ("blade", _("Blade")),
+        ("grip", _("Grip")),
+        ("handle", _("Handle")),
+        ("lowerlimb", _("Lower Limb")),
+        ("receiver", _("Receiver")),
+        ("stock", _("Stock")),
+        ("string", _("String")),
+        ("upperlimb", _("Upper Limb"))
+    ]
+    weapon = models.ForeignKey(
+        qpPrimaryWeapon,
+        on_delete=models.CASCADE,
+        related_name="components",
+        verbose_name=_("Weapon"),
+        blank=False,
+        null=False
+    )
+    name = models.CharField(
+        verbose_name=_("Name"),
+        max_length=32,
+        choices=CHOIX_COMPONENTS,
+        blank=False,
+        null=False
+    )
+
+    class Meta:
+        verbose_name = _("Primary Weapon Component")
+        verbose_name_plural = _("Primary Weapon Components")
+        ordering = ["weapon", "name"]
+    
+    def __str__(self):
+        return "%s - %s" % (
+            str(self.weapon.name),
+            str(self.get_name_display())
+        )
+
+
+class qpSecondaryWeapon(models.Model):
+    name = models.CharField(
+        verbose_name=_("Name"),
+        max_length=120,
+        blank=False,
+        null=False
+    )
+    image_name = models.CharField(
+        verbose_name=_("Image Name"),
+        max_length=250,
+        blank=True,
+        null=True
+    )
+
+    class Meta:
+        verbose_name = _("Secondary Weapon")
+        verbose_name_plural = _("Secondary Weapons")
+        ordering = ["name"]
+    
+    def __str__(self):
+        return "%s" % (
+            str(self.name)
+        )
+
+
+class qpMeleeWeapon(models.Model):
+    name = models.CharField(
+        verbose_name=_("Name"),
+        max_length=120,
+        blank=False,
+        null=False
+    )
+    image_name = models.CharField(
+        verbose_name=_("Image Name"),
+        max_length=250,
+        blank=True,
+        null=True
+    )
+
+    class Meta:
+        verbose_name = _("Melee Weapon")
+        verbose_name_plural = _("Melee Weapons")
+        ordering = ["name"]
+    
+    def __str__(self):
+        return "%s" % (
             str(self.name)
         )
 
@@ -130,3 +248,38 @@ class qpWarframeRelicReward(models.Model):
         )
 
 
+class qpPrimaryWeaponRelicReward(models.Model):
+    relic = models.ForeignKey(
+        qpRelic,
+        on_delete=models.CASCADE,
+        related_name="primaryweapon_rewards",
+        verbose_name=_("Relic"),
+        blank=False,
+        null=False
+    )
+    component = models.ForeignKey(
+        qpPrimaryWeaponComponent,
+        on_delete=models.CASCADE,
+        related_name="rewards",
+        verbose_name=_("Primary Weapon Component"),
+        blank=False,
+        null=False
+    )
+    percent = models.FloatField(
+        verbose_name=_("Drop Chance"),
+        default=0,
+        blank=False,
+        null=False
+    )
+
+    class Meta:
+        verbose_name = _("Primary Weapon Relic Reward")
+        verbose_name_plural = _("Primary Weapon Relic Rewards")
+        ordering = ["component", "-percent"]
+    
+    def __str__(self):
+        return "%s %s - %s" % (
+            str(self.relic.era),
+            str(self.relic.name),
+            str(self.component)
+        )

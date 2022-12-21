@@ -33,9 +33,11 @@ const goTo = (obj: any) => {
                 <el-tabs v-model="$route.name" stretch @tab-change="goToTab">
                     <el-tab-pane :label="$t('Relics')" name="Home" />
                     <el-tab-pane :label="$t('Warframes')" name="Warframes" />
-                    <el-tab-pane :label="$t('PrimaryWeapons')" name="PrimaryWeapons" disabled />
-                    <el-tab-pane :label="$t('SecondaryWeapons')" name="SecondaryWeapons" disabled />
-                    <el-tab-pane :label="$t('MeleeWeapons')" name="MeleeWeapons" disabled />
+                    <el-tab-pane :label="$t('Primary')" name="PrimaryWeapons" />
+                    <el-tab-pane :label="$t('Secondary')" name="SecondaryWeapons" />
+                    <el-tab-pane :label="$t('Melee')" name="MeleeWeapons" />
+                    <el-tab-pane :label="$t('Archwings')" name="Archwings" disabled />
+                    <el-tab-pane :label="$t('Companions')" name="Companions" disabled />
                 </el-tabs>
             </div>
         </div>
@@ -70,14 +72,20 @@ const goTo = (obj: any) => {
                             <el-dropdown-item :command="{name:'Warframes'}" :disabled="$route.name=='Warframes'">
                                 <span v-text="$t('Warframes')"></span>
                             </el-dropdown-item>
-                            <el-dropdown-item :command="{name:'PrimaryWeapons'}" :disabled="true">
+                            <el-dropdown-item :command="{name:'PrimaryWeapons'}" :disabled="$route.name=='PrimaryWeapons'">
                                 <span v-text="$t('PrimaryWeapons')"></span>
                             </el-dropdown-item>
-                            <el-dropdown-item :command="{name:'SecondaryWeapons'}" :disabled="true">
+                            <el-dropdown-item :command="{name:'SecondaryWeapons'}" :disabled="$route.name=='SecondaryWeapons'">
                                 <span v-text="$t('SecondaryWeapons')"></span>
                             </el-dropdown-item>
-                            <el-dropdown-item :command="{name:'MeleeWeapons'}" :disabled="true">
+                            <el-dropdown-item :command="{name:'MeleeWeapons'}" :disabled="$route.name=='MeleeWeapons'">
                                 <span v-text="$t('MeleeWeapons')"></span>
+                            </el-dropdown-item>
+                            <el-dropdown-item :command="{name:'Archwings'}" :disabled="true">
+                                <span v-text="$t('Archwings')"></span>
+                            </el-dropdown-item>
+                            <el-dropdown-item :command="{name:'Companions'}" :disabled="true">
+                                <span v-text="$t('Companions')"></span>
                             </el-dropdown-item>
                             <el-divider />
                             <el-dropdown-item :command="{name:'Settings'}" :disabled="$route.name=='Settings'">

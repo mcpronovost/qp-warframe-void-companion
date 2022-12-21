@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-16 11:03-0500\n"
+"POT-Creation-Date: 2022-12-21 09:38-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-#: qp/companion/models.py:13 qp/users/models.py:20
+
+#: qp/api/serializers/auth.py:48
+msgid "Invalid details."
+msgstr "Détails invalides."
+
+#: qp/companion/models.py:13 qp/users/models.py:21
 msgid "User"
 msgstr "Utilisateur"
 
@@ -33,94 +38,214 @@ msgstr "Créé"
 msgid "Updated at"
 msgstr "Mis à jour"
 
-#: qp/companion/models.py:35 qp/warframe/models.py:52 qp/warframe/models.py:109
+#: qp/companion/models.py:35 qp/warframe/models.py:54 qp/warframe/models.py:227
 msgid "Warframe Component"
 msgstr "Composant de Warframe"
 
-#: qp/companion/models.py:36 qp/warframe/models.py:53
+#: qp/companion/models.py:36 qp/warframe/models.py:55
 msgid "Warframe Components"
 msgstr "Composants de Warframe"
 
-#: qp/users/models.py:6
+#: qp/users/models.py:7
 msgid "French"
 msgstr "Français"
 
-#: qp/users/models.py:7
+#: qp/users/models.py:8
 msgid "English"
 msgstr "Anglais"
 
-#: qp/users/models.py:11
+#: qp/users/models.py:12
 msgid "America/Toronto"
 msgstr "Amérique/Toronto"
 
-#: qp/users/models.py:12
+#: qp/users/models.py:13
 msgid "Europe/Paris"
 msgstr "Europe/Paris"
 
-#: qp/users/models.py:25
-msgid "Language"
-msgstr "Langue"
-
-#: qp/users/models.py:33
-msgid "Timezone"
-msgstr "Fuseau horaire"
-
-#: qp/users/models.py:42 qp/users/models.py:43 qp/users/models.py:47
-msgid "Profile"
-msgstr "Profil"
-
-#: qp/warframe/models.py:6 qp/warframe/models.py:44 qp/warframe/models.py:78
+#: qp/users/models.py:26 qp/warframe/models.py:7 qp/warframe/models.py:46
+#: qp/warframe/models.py:67 qp/warframe/models.py:112 qp/warframe/models.py:133
+#: qp/warframe/models.py:158 qp/warframe/models.py:196
 msgid "Name"
 msgstr "Nom"
 
-#: qp/warframe/models.py:12
+#: qp/users/models.py:32
+msgid "Slug"
+msgstr "Slug"
+
+#: qp/users/models.py:40
+msgid "Language"
+msgstr "Langue"
+
+#: qp/users/models.py:48
+msgid "Timezone"
+msgstr "Fuseau horaire"
+
+#: qp/users/models.py:56
+msgid "Hide Completed Warframes"
+msgstr "Cacher les Warframes terminées"
+
+#: qp/users/models.py:60
+msgid "Hide Completed Primary Weapons"
+msgstr "Cacher les armes principales terminées"
+
+#: qp/users/models.py:64
+msgid "Hide Completed Secondary Weapons"
+msgstr "Cacher les armes secondaires terminées"
+
+#: qp/users/models.py:68
+msgid "Hide Completed Melee Weapons"
+msgstr "Cacher les armes de mêlées terminées"
+
+#: qp/users/models.py:72
+msgid "Hide Completed Archwings"
+msgstr "Cacher les archwings terminées"
+
+#: qp/users/models.py:76
+msgid "Hide Completed Companions"
+msgstr "Cacher les compagnons terminées"
+
+#: qp/users/models.py:80
+msgid "Complete"
+msgstr "Complété"
+
+#: qp/users/models.py:84
+msgid "Public"
+msgstr "Public"
+
+#: qp/users/models.py:89 qp/users/models.py:90 qp/users/models.py:94
+msgid "Profile"
+msgstr "Profil"
+
+#: qp/warframe/models.py:13 qp/warframe/models.py:73 qp/warframe/models.py:139
+#: qp/warframe/models.py:164
 msgid "Image Name"
 msgstr "Nom d'image"
 
-#: qp/warframe/models.py:19 qp/warframe/models.py:39
+#: qp/warframe/models.py:20 qp/warframe/models.py:41
 msgid "Warframe"
 msgstr "Warframe"
 
-#: qp/warframe/models.py:20
+#: qp/warframe/models.py:21
 msgid "Warframes"
 msgstr "Warframes"
 
-#: qp/warframe/models.py:30
+#: qp/warframe/models.py:32 qp/warframe/models.py:92
 msgid "Blueprint"
 msgstr "Schéma"
 
-#: qp/warframe/models.py:31
+#: qp/warframe/models.py:33
 msgid "Neuroptics"
 msgstr "Neuroptiques"
 
-#: qp/warframe/models.py:32
+#: qp/warframe/models.py:34
 msgid "Chassis"
 msgstr "Châssis"
 
-#: qp/warframe/models.py:33
+#: qp/warframe/models.py:35
 msgid "Systems"
 msgstr "Systèmes"
 
-#: qp/warframe/models.py:71
+#: qp/warframe/models.py:80
+msgid "Primary Weapon"
+msgstr "Arme principale"
+
+#: qp/warframe/models.py:81
+msgid "Primary Weapons"
+msgstr "Armes principales"
+
+#: qp/warframe/models.py:93
+msgid "Barrel"
+msgstr "Canon"
+
+#: qp/warframe/models.py:94
+msgid "Blade"
+msgstr "Lame"
+
+#: qp/warframe/models.py:95
+msgid "Grip"
+msgstr "Prise"
+
+#: qp/warframe/models.py:96
+msgid "Handle"
+msgstr "Poignée"
+
+#: qp/warframe/models.py:97
+msgid "Lower Limb"
+msgstr "Partie inférieure"
+
+#: qp/warframe/models.py:98
+msgid "Receiver"
+msgstr "Culasse"
+
+#: qp/warframe/models.py:99
+msgid "Stock"
+msgstr "Crosse"
+
+#: qp/warframe/models.py:100
+msgid "String"
+msgstr "Corde"
+
+#: qp/warframe/models.py:101
+msgid "Upper Limb"
+msgstr "Partie supérieure"
+
+#: qp/warframe/models.py:107
+msgid "Weapon"
+msgstr "Arme"
+
+#: qp/warframe/models.py:120 qp/warframe/models.py:264
+msgid "Primary Weapon Component"
+msgstr "Composant d'arme principale"
+
+#: qp/warframe/models.py:121
+msgid "Primary Weapon Components"
+msgstr "Composants d'arme principale"
+
+#: qp/warframe/models.py:146
+msgid "Secondary Weapon"
+msgstr "Arme secondaire"
+
+#: qp/warframe/models.py:147
+msgid "Secondary Weapons"
+msgstr "Armes secondaires"
+
+#: qp/warframe/models.py:171
+msgid "Melee Weapon"
+msgstr "Arme de mêlée"
+
+#: qp/warframe/models.py:172
+msgid "Melee Weapons"
+msgstr "Armes de mêlée"
+
+#: qp/warframe/models.py:189
 msgid "Era"
 msgstr "Ère"
 
-#: qp/warframe/models.py:85 qp/warframe/models.py:101
+#: qp/warframe/models.py:203 qp/warframe/models.py:219
+#: qp/warframe/models.py:256
 msgid "Relic"
 msgstr "Relique"
 
-#: qp/warframe/models.py:86
+#: qp/warframe/models.py:204
 msgid "Relics"
 msgstr "Reliques"
 
-#: qp/warframe/models.py:114
+#: qp/warframe/models.py:232 qp/warframe/models.py:269
 msgid "Drop Chance"
 msgstr "Chance de drop"
 
-#: qp/warframe/models.py:121
+#: qp/warframe/models.py:239
 msgid "Warframe Relic Reward"
 msgstr "Récompense de relique (Warframe)"
 
-#: qp/warframe/models.py:122
+#: qp/warframe/models.py:240
 msgid "Warframe Relic Rewards"
 msgstr "Récompense de relique (Warframe)"
+
+#: qp/warframe/models.py:276
+msgid "Primary Weapon Relic Reward"
+msgstr "Récompense de relique (Arme principale)"
+
+#: qp/warframe/models.py:277
+msgid "Primary Weapon Relic Rewards"
+msgstr "Récompense de relique (Arme principale)"

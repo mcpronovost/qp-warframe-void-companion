@@ -229,7 +229,7 @@ body .el-popper.qp-topbar-popper .el-dropdown-menu {
 
 
 .list-enter-active {
-  transition: all 2.5s ease;
+  transition: all 0.5s ease;
 }
 .list-leave-active {
   transition: all 0.5s ease;
@@ -237,5 +237,5 @@ body .el-popper.qp-topbar-popper .el-dropdown-menu {
 .list-enter-from,
 .list-leave-to {
   opacity: 0;
-  transform: translateX(30px);
+  transform: scale(0);
 }

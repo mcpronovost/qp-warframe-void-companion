@@ -52,12 +52,16 @@ const doWarframeDetail = async (update = false) => {
     }
 }
 
-const doWarframeOwn = async (id: Number) => {
+const doWarframeOwn = async (id: Number, doall: Boolean = false) => {
   isLoadingOwning.value = true
   hasErrorOwning.value = null
   // ===---
   let data = new FormData()
-  data.append("id", id.toString())
+  if (warframe.value && doall) {
+    data.append("id", warframe.value.components.map(c => c.id.toString()).join(","))
+  } else {
+    data.append("id", id.toString())
+  }
   // ===---
   try {
       let f = await fetch(`${API}/me/warframes/components/create/`, {
@@ -82,13 +86,19 @@ const doWarframeOwn = async (id: Number) => {
   }
 }
 
-const doWarframeUnown = async (id: Number) => {
+const doWarframeUnown = async (id: Number, doall: Boolean = false) => {
   isLoadingOwning.value = true
   hasErrorOwning.value = null
+  // ===---
+  let data = new FormData()
+  if (warframe.value && doall) {
+    data.append("ids", warframe.value.components.map(c => c.id.toString()).join(","))
+  }
   // ===---
   try {
       let f = await fetch(`${API}/me/warframes/components/${id}/delete/`, {
           method: "DELETE",
+          body: data,
           headers: HEADERS(rat.value, lang.value)
       })
       .then((r) => {return r})
@@ -132,6 +142,14 @@ onMounted(() => {doWarframeDetail()})
 <template>
   <div v-if="!isLoading && !hasError && warframe" class="qp-container">
     <qp-header :title="warframe.name" page-type="warframe" />
+    <div class="qp-warframes-actions">
+      <div class="qp-warframes-actions-extra">
+        <el-button-group>
+          <el-button v-if="warframe.completion < 100" @click="doWarframeOwn(0, true)"><span v-text="$t('CompleteAll')"></span></el-button>
+          <el-button v-else @click="doWarframeUnown(0, true)"><span v-text="$t('RemoveAll')"></span></el-button>
+        </el-button-group>
+      </div>
+    </div>
     <el-row class="qp-warframes-detail">
       <el-col :span="24" :md="14" class="qp-warframes-detail-info">
         <ul v-loading="isLoadingOwning" class="qp-warframes-detail-components-list">
@@ -194,6 +212,16 @@ onMounted(() => {doWarframeDetail()})
 </template>
 
 <style scoped>
+.qp-warframes-actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 0 20px 20px;
+}
+.qp-warframes-actions-extra {
+  text-align: left;
+}
+/* ===---=== */
 .qp-warframes-detail-components-list {
   list-style: none;
   padding: 0;

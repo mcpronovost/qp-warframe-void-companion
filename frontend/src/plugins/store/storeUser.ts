@@ -42,16 +42,44 @@ export const QpStoreUser = defineStore("storeUser", {
                 state.last = new Date().getTime()
             })
         },
-        updateHideCompletedWarframes (payload: boolean) {
+        updateUser (payload: any) {
             this.$patch((state) => {
-                state.hide_completed_warframes = payload
+                state.id = payload.id
+                state.username = payload.username
+                state.email = payload.email
+                state.name = payload.name
+                state.slug = payload.slug
+                state.is_completed = payload.is_completed
+                state.hide_completed_warframes = payload.hide_completed_warframes
             })
+            this.updateLang(payload.lang)
+            this.updateTimezone(payload.timezone)
+            this.updateLast()
         },
         cleanUser () {
             Object.assign(this, initState)
-            this.updateUser()
+            this.doUpdateUser()
         },
-        async updateUser () {
+        async doUpdateHideCompletedWarframes (payload: boolean) {
+            if (this.rat) {
+                let data = new FormData()
+                data.append("hide_completed_warframes", payload.toString())
+                // ===---
+                let f = await fetch(`${API}/me/`, {
+                    method: "PATCH",
+                    body: data,
+                    headers: HEADERS(this.rat, this.lang)
+                })
+                if (f?.status === 200) {
+                    let r = await f.json()
+                    this.updateUser(r)
+                    return r
+                } else if (f?.status === 401) {
+                    this.cleanUser()
+                }
+            }
+        },
+        async doUpdateUser () {
             if (this.rat) {
                 let f = await fetch(`${API}/me/`, {
                     method: "GET",
@@ -59,18 +87,7 @@ export const QpStoreUser = defineStore("storeUser", {
                 })
                 if (f?.status === 200) {
                     let r = await f.json()
-                    this.$patch((state) => {
-                        state.id = r.id
-                        state.username = r.username
-                        state.email = r.email
-                        state.name = r.name
-                        state.slug = r.slug
-                        state.is_completed = r.is_completed
-                        state.hide_completed_warframes = true
-                    })
-                    this.updateLang(r.lang)
-                    this.updateTimezone(r.timezone)
-                    this.updateLast()
+                    this.updateUser(r)
                     return r
                 } else if (f?.status === 401) {
                     this.cleanUser()

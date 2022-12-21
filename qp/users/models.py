@@ -52,6 +52,30 @@ class qpUserProfile(models.Model):
         blank=False,
         null=False
     )
+    hide_completed_warframes = models.BooleanField(
+        verbose_name=_("Hide Completed Warframes"),
+        default=False
+    )
+    hide_completed_primaryweapons = models.BooleanField(
+        verbose_name=_("Hide Completed Primary Weapons"),
+        default=False
+    )
+    hide_completed_secondaryweapons = models.BooleanField(
+        verbose_name=_("Hide Completed Secondary Weapons"),
+        default=False
+    )
+    hide_completed_meleeweapons = models.BooleanField(
+        verbose_name=_("Hide Completed Melee Weapons"),
+        default=False
+    )
+    hide_completed_archwings = models.BooleanField(
+        verbose_name=_("Hide Completed Archwings"),
+        default=False
+    )
+    hide_completed_companions = models.BooleanField(
+        verbose_name=_("Hide Completed Companions"),
+        default=False
+    )
     is_completed = models.BooleanField(
         verbose_name=_("Complete"),
         default=False

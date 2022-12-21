@@ -1,0 +1,1 @@
+const r=e=>e.toString().normalize("NFD").toLowerCase().trim().replace(/\s+/g,"-").replace(/ð/g,"d").replace(/ß/g,"ss").replace(/§/g,"ss").replace(/ł/g,"l").replace(/ø/g,"o").replace(/æ/g,"ae").replace(/œ/g,"oe").replace(/ĸ/g,"k").replace(/µ/g,"u").replace(/[^\w\-]+/g,"").replace(/\_/g,"-").replace(/\-\-+/g,"-").replace(/\-$/g,"");export{r as q};
