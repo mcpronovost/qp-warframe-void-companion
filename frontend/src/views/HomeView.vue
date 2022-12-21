@@ -56,8 +56,8 @@ const doRelicsList = async (page: string|null, era: string|null, update = false)
         .catch(() => {return new Response(null,{status: 400})})
         if (f.status === 200) {
             let r = await f.json()
-            relics_total.value = r.count
             relics_size.value = r.size
+            relics_total.value = r.count
             listRelicsOriginal.value = r.results
             listRelics.value = r.results
             isLoading.value = false

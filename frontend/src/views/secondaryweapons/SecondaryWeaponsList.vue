@@ -14,6 +14,7 @@ const { rat, lang, hide_completed_warframes } = storeToRefs(useStoreUser)
 const { doUpdateHideCompletedWarframes } = useStoreUser
 
 const isLoading = ref<boolean>(false)
+const isLoadingUpdate = ref<boolean>(false)
 const hasError = ref<string|null>(null)
   
 const weapons_page = ref<number>(1)
@@ -23,8 +24,9 @@ const weapons_total = ref<number>(0)
 const listWeaponsOriginal = ref<Array<any>>([])
 const listWeapons = ref<Array<any>>([])
 
-const doWeaponsList = async (page: string|null) => {
-    isLoading.value = true
+const doWeaponsList = async (page: string|null = null, update = true) => {
+    if (!update) isLoading.value = true
+    else isLoadingUpdate.value = true
     hasError.value = null
     // ===---
     let query = page ? `?page=${page}` : "?page=1"
@@ -43,6 +45,7 @@ const doWeaponsList = async (page: string|null) => {
             listWeaponsOriginal.value = r.results
             listWeapons.value = doFormatWeaponsList(hide_completed_warframes.value)
             isLoading.value = false
+            isLoadingUpdate.value = false
         } else {
             throw f.status
         }
@@ -51,6 +54,7 @@ const doWeaponsList = async (page: string|null) => {
         else ElMessage.error(t("AnErrorOccurred"))
         hasError.value = `${e}`
         isLoading.value = false
+        isLoadingUpdate.value = false
     }
 }
 
@@ -75,7 +79,7 @@ const hideCompletedWeapons = () => {
     listWeapons.value = doFormatWeaponsList(true)
 }
 
-onMounted(() => {doWeaponsList(null)})
+onMounted(() => {doWeaponsList(null, false)})
 </script>
 
 <template>
@@ -89,7 +93,7 @@ onMounted(() => {doWeaponsList(null)})
     </div>
     <el-row v-if="listWeapons.length" class="qp-weapons-list">
       <TransitionGroup name="list" mode="out-in">
-        <el-col v-for="(weapon, n) in listWeapons" :key="`weapons-${n}`" :span="12" :sm="8" :md="6" :lg="4">
+        <el-col v-for="(weapon, n) in listWeapons" :key="`weapons-${n}`" v-loading="isLoadingUpdate" :span="12" :sm="8" :md="6" :lg="4">
           <div class="qp-weapons-item" @click="$router.push({name:'SecondaryWeaponsDetail',params:{pk:weapon.id,slug:qpslug(weapon.name)}})">
             <div class="qp-weapons-item-wrapper">
               <div class="qp-weapons-image" :style="`background-image:url('https://raw.githubusercontent.com/WFCD/warframe-items/master/data/img/${weapon.image_name}')`"></div>

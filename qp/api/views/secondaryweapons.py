@@ -14,6 +14,7 @@ class qpSecondaryWeaponsListView(ListAPIView):
     permission_classes = [qpIsAny]
     queryset = qpSecondaryWeapon.objects.all()
     serializer_class = qpSecondaryWeaponSimpleSerializer
+    page_size = 48
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)

@@ -16,6 +16,7 @@ class qpWarframeListView(ListAPIView):
     permission_classes = [qpIsAny]
     queryset = qpWarframe.objects.all()
     serializer_class = qpWarframeSimpleSerializer
+    page_size = 48
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)

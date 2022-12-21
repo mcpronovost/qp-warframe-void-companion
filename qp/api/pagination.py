@@ -6,12 +6,15 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 class qpPagination(pagination.PageNumberPagination):
-    page_size = 48
+    page_size = 24
 
     def get_page_size(self, request):
         query_limit = request.query_params.get("limit", None)
         if query_limit is not None:
             return query_limit
+        view = request.parser_context["view"]
+        if hasattr(view, "page_size"):
+            return getattr(view, "page_size")
         return self.page_size
 
     def get_paginated_response(self, data):

@@ -14,17 +14,25 @@ const { rat, lang, hide_completed_warframes } = storeToRefs(useStoreUser)
 const { doUpdateHideCompletedWarframes } = useStoreUser
 
 const isLoading = ref<boolean>(false)
+const isLoadingUpdate = ref<boolean>(false)
 const hasError = ref<string|null>(null)
 
 const listWarframesOriginal = ref<Array<any>>([])
 const listWarframes = ref<Array<any>>([])
+  
+const warframes_page = ref<number>(1)
+const warframes_size = ref<number>(1)
+const warframes_total = ref<number>(0)
 
-const doWarframesList = async () => {
-    isLoading.value = true
+const doWarframesList = async (page: string|null = null, update = true) => {
+    if (!update) isLoading.value = true
+    else isLoadingUpdate.value = true
     hasError.value = null
     // ===---
+    let query = page ? `?page=${page}` : "?page=1"
+    // ===---
     try {
-        let f = await fetch(`${API}/warframes/`, {
+        let f = await fetch(`${API}/warframes/${query}`, {
             method: "GET",
             headers: HEADERS(rat.value, lang.value)
         })
@@ -32,9 +40,12 @@ const doWarframesList = async () => {
         .catch(() => {return new Response(null,{status: 400})})
         if (f.status === 200) {
             let r = await f.json()
+            warframes_size.value = r.size
+            warframes_total.value = r.count
             listWarframesOriginal.value = r.results
             listWarframes.value = doFormatWarframesList(hide_completed_warframes.value)
             isLoading.value = false
+            isLoadingUpdate.value = false
         } else {
             throw f.status
         }
@@ -43,6 +54,7 @@ const doWarframesList = async () => {
         else ElMessage.error(t("AnErrorOccurred"))
         hasError.value = `${e}`
         isLoading.value = false
+        isLoadingUpdate.value = false
     }
 }
 
@@ -67,7 +79,7 @@ const hideCompletedWarframes = () => {
   listWarframes.value = doFormatWarframesList(true)
 }
 
-onMounted(() => {doWarframesList()})
+onMounted(() => {doWarframesList(null, false)})
 </script>
 
 <template>
@@ -81,7 +93,7 @@ onMounted(() => {doWarframesList()})
     </div>
     <el-row v-if="listWarframes.length" class="qp-warframes-list">
       <TransitionGroup name="list" mode="out-in">
-        <el-col v-for="(warframe, n) in listWarframes" :key="`warframes-${n}`" :span="12" :sm="8" :md="6" :lg="4">
+        <el-col v-for="(warframe, n) in listWarframes" :key="`warframes-${n}`" v-loading="isLoadingUpdate" :span="12" :sm="8" :md="6" :lg="4">
           <div class="qp-warframes-item" @click="$router.push({name:'WarframesDetail',params:{pk:warframe.id,slug:qpslug(warframe.name)}})">
             <div class="qp-warframes-item-wrapper">
               <div class="qp-warframes-image" :style="`background-image:url('https://raw.githubusercontent.com/WFCD/warframe-items/master/data/img/${warframe.image_name}')`"></div>
@@ -96,6 +108,9 @@ onMounted(() => {doWarframesList()})
           </div>
         </el-col>
       </TransitionGroup>
+      <el-col>
+          <el-pagination background hide-on-single-page layout="prev, pager, next" v-model:current-page="warframes_page" :page-size="warframes_size" :total="warframes_total" @current-change="doWarframesList" />
+      </el-col>
     </el-row>
     <el-row v-else>
       <el-col>
