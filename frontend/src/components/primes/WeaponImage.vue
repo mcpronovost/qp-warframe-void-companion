@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import imgBlueprint from "../../assets/img/blueprint.png";
+import imgChassis from "../../assets/img/chassis.png";
+import imgNeuroptics from "../../assets/img/neuroptics.png";
+import imgSystems from "../../assets/img/systems.png";
 import imgBarrel from "../../assets/img/prime_barrel.png";
 import imgBlade from "../../assets/img/prime_blade.png";
 import imgBlades from "../../assets/img/prime_blades.png";
@@ -30,6 +33,9 @@ const props = defineProps({
 <template>
   <div>
     <el-image v-if="props.component == 'blueprint'" :src="imgBlueprint" />
+    <el-image v-else-if="props.component == 'chassis'" :src="imgChassis" />
+    <el-image v-else-if="props.component == 'neuroptics'" :src="imgNeuroptics" />
+    <el-image v-else-if="props.component == 'systems'" :src="imgSystems" />
     <el-image v-else-if="props.component == 'barrel'" :src="imgBarrel" />
     <el-image v-else-if="props.component == 'blade'" :src="imgBlade" />
     <el-image v-else-if="props.component == 'blades'" :src="imgBlades" />
