@@ -30,6 +30,11 @@ const props = defineProps({
   relic: {
     type: Object as PropType<TypeRelic>,
     required: true
+  },
+  readonly: {
+    type: Boolean,
+    default: false,
+    required: false
   }
 })
 
@@ -38,7 +43,7 @@ const emits = defineEmits(["close"])
 const isLoadingOwning = ref<boolean>(false)
 const hasErrorOwning = ref<string|null>(null)
 
-const doWarframeOwn = async (id: Number, component_type: String) => {
+const doComponentOwn = async (id: Number, component_type: String) => {
   isLoadingOwning.value = true
   hasErrorOwning.value = null
   // ===---
@@ -72,7 +77,7 @@ const doWarframeOwn = async (id: Number, component_type: String) => {
 <template>
   <div>
     <ul v-if="props.relic?.components" v-loading="isLoadingOwning" class="qp-relics-drawer-components-list">
-      <li v-for="(component, n) in props.relic.components" :key="`warframe-components-${n}`" class="qp-relics-drawer-components-item" @click="doWarframeOwn(component.id, component.type)">
+      <li v-for="(component, n) in props.relic.components" :key="`warframe-components-${n}`" :class="`qp-relics-drawer-components-item${readonly ? ' qp-readonly' : ''}`" @click="!readonly ? doComponentOwn(component.id, component.type) : undefined">
         <div class="qp-relics-drawer-components-item-wrapper">
           <div class="qp-relics-drawer-components-img">
             <el-image v-if="component.component == 'blueprint'" :src="imgBlueprint" />
@@ -121,7 +126,7 @@ const doWarframeOwn = async (id: Number, component_type: String) => {
   padding: 0;
   margin: 0 0 10px 0;
 }
-.qp-relics-drawer-components-item:hover {
+.qp-relics-drawer-components-item:not(.qp-readonly):hover {
   border-color: var(--qp-card-bg-light-2);
   cursor: pointer;
 }
@@ -148,7 +153,7 @@ const doWarframeOwn = async (id: Number, component_type: String) => {
   bottom: 0;
   transition: width 0.3s;
 }
-.qp-relics-drawer-components-item:hover .qp-relics-drawer-components-item-wrapper::after {
+.qp-relics-drawer-components-item:not(.qp-readonly):hover .qp-relics-drawer-components-item-wrapper::after {
   width: 100%;
 }
 .qp-relics-drawer-components-img {

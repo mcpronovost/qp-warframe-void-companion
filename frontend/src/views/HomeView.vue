@@ -166,7 +166,7 @@ onUnmounted(() => {
         <template #header>
           <span v-if="dataDrawerRelic" class="el-drawer__title" v-text="`${dataDrawerRelic.era} ${dataDrawerRelic.name}`"></span>
         </template>
-        <qpRelicDrawer v-if="dataDrawerRelic" :relic="dataDrawerRelic" @click="closeDrawerRelic(); doRelicsList(null, currentEra, true);" />
+        <qpRelicDrawer v-if="dataDrawerRelic" :relic="dataDrawerRelic" @close="closeDrawerRelic(); doRelicsList(null, currentEra, true);" />
       </el-drawer>
     </div>
     <qp-notfound v-else-if="!isLoading" />

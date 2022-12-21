@@ -40,6 +40,22 @@ class qpUserRelicsSerializer(serializers.ModelSerializer):
                             "component": str(reward.component.name),
                             "percent": int(round(reward.percent * 100))
                         })
+                for reward in obj.primaryweapon_rewards.all():
+                    is_owned = reward.component.user_components.filter(
+                        user=user
+                    ).first()
+                    if not is_owned:
+                        result.append({
+                            "id": int(reward.component.pk),
+                            "name": "%s - %s" % (
+                                str(reward.component.weapon),
+                                str(reward.component.get_name_display())
+                            ),
+                            "type": "primary-weapons",
+                            "weapon": str(reward.component.weapon),
+                            "component": str(reward.component.name),
+                            "percent": int(round(reward.percent * 100))
+                        })
         except Exception as e:
             pass
         return result
@@ -58,6 +74,20 @@ class qpUserRelicsSerializer(serializers.ModelSerializer):
             ).first()
             if user is not None:
                 for reward in obj.warframe_rewards.all():
+                    is_owned = reward.component.user_components.filter(
+                        user=user
+                    ).first()
+                    if not is_owned:
+                        percent = int(round(reward.percent * 100))
+                        if percent < 10 and not result["gold"]:
+                            result["gold"] = True
+                        elif percent > 9 and percent < 20 and not result["silver"]:
+                            result["silver"] = True
+                        elif percent > 19 and not result["bronze"]:
+                            result["bronze"] = True
+                for reward in obj.primaryweapon_rewards.all():
+                    if result["gold"] == True and result["silver"] == True and result["gold"] == True:
+                        break
                     is_owned = reward.component.user_components.filter(
                         user=user
                     ).first()

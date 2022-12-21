@@ -3,8 +3,9 @@ from rest_framework import status
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 
-from qp.warframe.models import qpWarframeComponent, qpRelic
+from qp.warframe.models import qpWarframeComponent, qpPrimaryWeaponComponent, qpRelic
 from qp.api.serializers.users import qpUserRelicsSerializer
 
 
@@ -44,13 +45,18 @@ class qpUserRelicsListView(ListAPIView):
         era = request.GET.get("era", None)
         try:
             if user is not None:
-                owned_warframe_components = user.warframe_components.all()
                 unowned_warframe_components = qpWarframeComponent.objects.exclude(
-                    user_components__in=owned_warframe_components
+                    user_components__in=user.warframe_components.all()
                 )
+                unowned_primaryweapon_components = qpPrimaryWeaponComponent.objects.exclude(
+                    user_components__in=user.primaryweapon_components.all()
+                )
+                # ===---
                 all_relics = qpRelic.objects.filter(
-                    warframe_rewards__component__in=unowned_warframe_components
+                    Q(warframe_rewards__component__in=unowned_warframe_components) |
+                    Q(primaryweapon_rewards__component__in=unowned_primaryweapon_components)
                 )
+                # ===---
                 if era is not None:
                     all_relics = all_relics.filter(
                         era=era
