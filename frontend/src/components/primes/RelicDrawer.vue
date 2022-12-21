@@ -15,6 +15,7 @@ import imgBarrel from "../../assets/img/prime_barrel.png";
 import imgBlade from "../../assets/img/prime_blade.png";
 import imgGrip from "../../assets/img/prime_grip.png";
 import imgHandle from "../../assets/img/prime_handle.png";
+import imgLink from "../../assets/img/prime_link.png";
 import imgLowerLimb from "../../assets/img/prime_lowerlimb.png";
 import imgReceiver from "../../assets/img/prime_receiver.png";
 import imgStock from "../../assets/img/prime_stock.png";
@@ -59,7 +60,10 @@ const doComponentOwn = async (id: Number, component_type: String) => {
       .then((r) => {return r})
       .catch(() => {return new Response(null,{status: 400})})
       if (f.status === 201) {
-          ElMessage.success(t("ComponentUpdated"))
+          ElMessage.success({
+            message: t("ComponentUpdated"),
+            showClose: true
+          })
           isLoadingOwning.value = false
           emits("close")
       } else {
@@ -88,6 +92,7 @@ const doComponentOwn = async (id: Number, component_type: String) => {
             <el-image v-else-if="component.component == 'blade'" :src="imgBlade" />
             <el-image v-else-if="component.component == 'grip'" :src="imgGrip" />
             <el-image v-else-if="component.component == 'handle'" :src="imgHandle" />
+            <el-image v-else-if="component.component == 'link'" :src="imgLink" />
             <el-image v-else-if="component.component == 'lowerlimb'" :src="imgLowerLimb" />
             <el-image v-else-if="component.component == 'receiver'" :src="imgReceiver" />
             <el-image v-else-if="component.component == 'stock'" :src="imgStock" />

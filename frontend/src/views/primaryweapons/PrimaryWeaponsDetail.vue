@@ -4,7 +4,7 @@ import { ref, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElNotification } from "element-plus";
 import { API, HEADERS } from "../../plugins/store/index";
 import { storeUser } from "../../plugins/store";
 import qpWeaponImage from "../../components/primes/WeaponImage.vue";
@@ -70,7 +70,12 @@ const doWeaponOwn = async (id: Number, doall: Boolean = false) => {
       .then((r) => {return r})
       .catch(() => {return new Response(null,{status: 400})})
       if (f.status === 201) {
-          ElMessage.success(t("ComponentsUpdated"))
+          ElNotification({
+            message: doall ? t("ComponentsUpdated") : t("ComponentUpdated"),
+            type: "success",
+            position: "bottom-right",
+            showClose: true
+          })
           isLoadingOwning.value = false
           if (doall) router.push({name: "PrimaryWeapons"})
           else doWeaponDetail(true)
@@ -103,7 +108,12 @@ const doWeaponUnown = async (id: Number, doall: Boolean = false) => {
       .then((r) => {return r})
       .catch(() => {return new Response(null,{status: 400})})
       if (f.status === 204) {
-          ElMessage.success(t("ComponentUpdated"))
+          ElNotification({
+            message: doall ? t("ComponentsUpdated") : t("ComponentUpdated"),
+            type: "success",
+            position: "bottom-right",
+            showClose: true
+          })
           isLoadingOwning.value = false
           doWeaponDetail(true)
       } else {
@@ -123,16 +133,6 @@ const sortByEra = (relics: Array<TypeRelic>, era: String) => {
   })
   if (result != undefined && result.length) return result
   return []
-}
-
-const sortRelicsOld = (relics: Array<TypeRelic>) => {
-  const eraList = ["Lith", "Meso", "Neo", "Axi"]
-  const sortedObj = relics.sort((a: any, b: any) => {
-      return (
-        eraList.indexOf(a.era) - eraList.indexOf(b.era)
-      );
-  });
-  return sortedObj
 }
 
 onMounted(() => {doWeaponDetail()})

@@ -37,7 +37,7 @@ const relics_total = ref<number>(0)
 const currentEra = ref<string|null>(null)
 const winWidth = ref(window.innerWidth)
 
-const doRelicsList = async (page: string|null, era: string|null, update = false) => {
+const doRelicsList = async (page: string|null, era: string|null, update = true) => {
     if (!update) isLoading.value = true
     else isLoadingUpdate.value = true
     hasError.value = null
@@ -95,7 +95,7 @@ const doCopyShareLink = () => {
 
 onMounted(() => {
   if (rat.value) {
-    doRelicsList(null, null)
+    doRelicsList(null, null, false)
     window.addEventListener("resize", doUpdateWinWidth)
   }
   else router.push({name: "AuthLogin"})
@@ -129,9 +129,9 @@ onUnmounted(() => {
           </el-button-group>
         </div>
       </div>
-      <el-row v-loading="isLoadingUpdate" class="qp-relics-list">
+      <el-row class="qp-relics-list">
         <TransitionGroup name="list" mode="out-in">
-          <el-col v-for="(relic, n) in listRelics" :key="`relics-${n}`" :span="12" :sm="8" :md="6" :lg="4" class="qp-relics-col">
+          <el-col v-for="(relic, n) in listRelics" :key="`relics-${n}`" v-loading="isLoadingUpdate" :span="12" :sm="8" :md="6" :lg="4" class="qp-relics-col">
             <div class="qp-relics-item" @click="openDrawerRelic(relic)">
               <div class="qp-relics-item-wrapper">
                 <div class="qp-relics-image">
