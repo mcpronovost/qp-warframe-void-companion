@@ -81,7 +81,8 @@ const doWeaponOwn = async (id: Number, doall: Boolean = false) => {
       if (f.status === 201) {
           ElMessage.success(t("ComponentsUpdated"))
           isLoadingOwning.value = false
-          router.push({name: "PrimaryWeapons"})
+          if (doall) router.push({name: "PrimaryWeapons"})
+          else doWeaponDetail(true)
       } else {
           throw f.status
       }

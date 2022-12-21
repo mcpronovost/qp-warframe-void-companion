@@ -75,7 +75,8 @@ const doWarframeOwn = async (id: Number, doall: Boolean = false) => {
       if (f.status === 201) {
           ElMessage.success(t("ComponentsUpdated"))
           isLoadingOwning.value = false
-          router.push({name: "Warframes"})
+          if (doall) router.push({name: "Warframes"})
+          else doWarframeDetail(true)
       } else {
           throw f.status
       }
