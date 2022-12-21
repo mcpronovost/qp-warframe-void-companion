@@ -6,12 +6,25 @@ from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.http import QueryDict
 
-from qp.warframe.models import qpWarframeComponent, qpPrimaryWeaponComponent, qpRelic
-from qp.companion.models import qpUserWarframeComponent, qpUserPrimaryWeaponComponent
+from qp.warframe.models import (
+    qpWarframeComponent,
+    qpPrimaryWeaponComponent,
+    qpSecondaryWeaponComponent,
+    qpMeleeWeaponComponent,
+    qpRelic
+)
+from qp.companion.models import (
+    qpUserWarframeComponent,
+    qpUserPrimaryWeaponComponent,
+    qpUserSecondaryWeaponComponent,
+    qpUserMeleeWeaponComponent
+)
 from qp.api.serializers.me import (
     qpMeSerializer,
     qpMeWarframeComponentsSerializer,
     qpMePrimaryWeaponComponentsSerializer,
+    qpMeSecondaryWeaponComponentsSerializer,
+    qpMeMeleeWeaponComponentsSerializer,
     qpMeRelicsSerializer
 )
 
@@ -199,6 +212,174 @@ class qpMePrimaryWeaponComponentsDeleteView(DestroyAPIView):
             component_ids = request.data.get("ids", "")
             for component_id in component_ids.split(","):
                 instance = qpUserPrimaryWeaponComponent.objects.filter(
+                    user=self.request.user,
+                    component__pk=int(component_id)
+                ).first()
+                if instance is not None:
+                    self.perform_destroy(instance)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class qpMeSecondaryWeaponComponentsCreateView(CreateAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = qpUserSecondaryWeaponComponent.objects.all()
+    serializer_class = qpMeSecondaryWeaponComponentsSerializer
+    lookup_field = "pk"
+
+    def post(self, request, *args, **kwargs):
+        pk = request.data.get("id", None)
+        if pk is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        if "," not in pk:
+            already_one = qpUserSecondaryWeaponComponent.objects.filter(
+                user=request.user,
+                component__pk=pk
+            ).first()
+            if already_one is not None:
+                return Response(status=status.HTTP_200_OK)
+            return self.create(request, *args, **kwargs)
+        elif "," in pk:
+            return self.create_multiple(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    def perform_create(self, serializer):
+        pk = int(self.request.data.get("id"))
+        component = qpSecondaryWeaponComponent.objects.filter(
+            pk=pk
+        ).first()
+        serializer.save(user=self.request.user, component=component)
+
+    def create_multiple(self, request, *args, **kwargs):
+        component_ids = request.data.get("id", "")
+        for component_id in component_ids.split(","):
+            already_one = qpUserSecondaryWeaponComponent.objects.filter(
+                user=request.user,
+                component__pk=component_id
+            ).first()
+            if already_one is not None:
+                continue
+            query_dict = QueryDict("", mutable=True)
+            query_dict.update({"id": component_id})
+            serializer = self.get_serializer(data=query_dict)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create_multiple(serializer, component_id)
+            headers = self.get_success_headers(serializer.data)
+        return Response({}, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create_multiple(self, serializer, component_id):
+        pk = int(component_id)
+        component = qpSecondaryWeaponComponent.objects.filter(
+            pk=pk
+        ).first()
+        serializer.save(user=self.request.user, component=component)
+
+
+class qpMeSecondaryWeaponComponentsDeleteView(DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = qpUserSecondaryWeaponComponent.objects.all()
+    serializer_class = qpMeSecondaryWeaponComponentsSerializer
+    lookup_field = "pk"
+
+    def destroy(self, request, *args, **kwargs):
+        pk = int(kwargs["pk"])
+        if pk > 0:
+            instance = qpUserSecondaryWeaponComponent.objects.filter(
+                user=self.request.user,
+                component__pk=pk
+            ).first()
+            if instance is not None:
+                self.perform_destroy(instance)
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        else:
+            component_ids = request.data.get("ids", "")
+            for component_id in component_ids.split(","):
+                instance = qpUserSecondaryWeaponComponent.objects.filter(
+                    user=self.request.user,
+                    component__pk=int(component_id)
+                ).first()
+                if instance is not None:
+                    self.perform_destroy(instance)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class qpMeMeleeWeaponComponentsCreateView(CreateAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = qpUserMeleeWeaponComponent.objects.all()
+    serializer_class = qpMeMeleeWeaponComponentsSerializer
+    lookup_field = "pk"
+
+    def post(self, request, *args, **kwargs):
+        pk = request.data.get("id", None)
+        if pk is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        if "," not in pk:
+            already_one = qpUserMeleeWeaponComponent.objects.filter(
+                user=request.user,
+                component__pk=pk
+            ).first()
+            if already_one is not None:
+                return Response(status=status.HTTP_200_OK)
+            return self.create(request, *args, **kwargs)
+        elif "," in pk:
+            return self.create_multiple(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    def perform_create(self, serializer):
+        pk = int(self.request.data.get("id"))
+        component = qpMeleeWeaponComponent.objects.filter(
+            pk=pk
+        ).first()
+        serializer.save(user=self.request.user, component=component)
+
+    def create_multiple(self, request, *args, **kwargs):
+        component_ids = request.data.get("id", "")
+        for component_id in component_ids.split(","):
+            already_one = qpUserMeleeWeaponComponent.objects.filter(
+                user=request.user,
+                component__pk=component_id
+            ).first()
+            if already_one is not None:
+                continue
+            query_dict = QueryDict("", mutable=True)
+            query_dict.update({"id": component_id})
+            serializer = self.get_serializer(data=query_dict)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create_multiple(serializer, component_id)
+            headers = self.get_success_headers(serializer.data)
+        return Response({}, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create_multiple(self, serializer, component_id):
+        pk = int(component_id)
+        component = qpMeleeWeaponComponent.objects.filter(
+            pk=pk
+        ).first()
+        serializer.save(user=self.request.user, component=component)
+
+
+class qpMeMeleeWeaponComponentsDeleteView(DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = qpUserMeleeWeaponComponent.objects.all()
+    serializer_class = qpMeMeleeWeaponComponentsSerializer
+    lookup_field = "pk"
+
+    def destroy(self, request, *args, **kwargs):
+        pk = int(kwargs["pk"])
+        if pk > 0:
+            instance = qpUserMeleeWeaponComponent.objects.filter(
+                user=self.request.user,
+                component__pk=pk
+            ).first()
+            if instance is not None:
+                self.perform_destroy(instance)
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        else:
+            component_ids = request.data.get("ids", "")
+            for component_id in component_ids.split(","):
+                instance = qpUserMeleeWeaponComponent.objects.filter(
                     user=self.request.user,
                     component__pk=int(component_id)
                 ).first()

@@ -1,22 +1,13 @@
 <script setup lang="ts">
 import type { TypeRelic, TypeWeapon } from "../../types/warframe";
-import { computed, reactive, ref, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import { API, HEADERS } from "../../plugins/store/index";
 import { storeUser } from "../../plugins/store";
-import imgBlueprint from "../../assets/img/blueprint.png";
-import imgBarrel from "../../assets/img/prime_barrel.png";
-import imgBlade from "../../assets/img/prime_blade.png";
-import imgGrip from "../../assets/img/prime_grip.png";
-import imgHandle from "../../assets/img/prime_handle.png";
-import imgLowerLimb from "../../assets/img/prime_lowerlimb.png";
-import imgReceiver from "../../assets/img/prime_receiver.png";
-import imgStock from "../../assets/img/prime_stock.png";
-import imgString from "../../assets/img/prime_string.png";
-import imgUpperLimb from "../../assets/img/prime_upperlimb.png";
+import qpWeaponImage from "../../components/primes/WeaponImage.vue";
 
 const { t } = useI18n()
 
@@ -24,7 +15,7 @@ const route = useRoute()
 const router = useRouter()
 
 const useStoreUser = storeUser()
-const { rat, lang, id } = storeToRefs(useStoreUser)
+const { rat, lang } = storeToRefs(useStoreUser)
 
 const isLoading = ref<boolean>(false)
 const isLoadingOwning = ref<boolean>(false)
@@ -164,16 +155,7 @@ onMounted(() => {doWeaponDetail()})
           <li v-for="(component, n) in weapon.components" :key="`weapon-components-${n}`" :class="`qp-weapons-detail-components-item${component.is_owned ? ' qp-isowned' : ''}`" @click="component.is_owned ? doWeaponUnown(component.id) : doWeaponOwn(component.id)">
             <div class="qp-weapons-detail-components-item-wrapper">
               <div class="qp-weapons-detail-components-img">
-                <el-image v-if="component.name == 'blueprint'" :src="imgBlueprint" />
-                <el-image v-else-if="component.name == 'barrel'" :src="imgBarrel" />
-                <el-image v-else-if="component.name == 'blade'" :src="imgBlade" />
-                <el-image v-else-if="component.name == 'grip'" :src="imgGrip" />
-                <el-image v-else-if="component.name == 'handle'" :src="imgHandle" />
-                <el-image v-else-if="component.name == 'lowerlimb'" :src="imgLowerLimb" />
-                <el-image v-else-if="component.name == 'receiver'" :src="imgReceiver" />
-                <el-image v-else-if="component.name == 'stock'" :src="imgStock" />
-                <el-image v-else-if="component.name == 'string'" :src="imgString" />
-                <el-image v-else-if="component.name == 'upperlimb'" :src="imgUpperLimb" />
+                <qpWeaponImage :component="component.name" />
               </div>
               <div>
                 <div class="qp-weapons-detail-components-name">

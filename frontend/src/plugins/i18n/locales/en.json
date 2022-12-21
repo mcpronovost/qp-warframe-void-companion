@@ -81,5 +81,8 @@
   "blade": "Blade",
   "barrel": "Barrel",
   "CompleteAll": "Complete All",
-  "RemoveAll": "Remove All"
+  "RemoveAll": "Remove All",
+  "pouch": "Pouch",
+  "link": "Link",
+  "stars": "Stars"
 }

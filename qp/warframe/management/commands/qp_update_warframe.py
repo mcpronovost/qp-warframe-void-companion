@@ -9,10 +9,12 @@ from qp.settings import STATICFILES_STORAGE
 from qp.warframe.models import (
     qpWarframe, qpWarframeComponent,
     qpPrimaryWeapon, qpPrimaryWeaponComponent,
-    qpSecondaryWeapon,
+    qpSecondaryWeapon, qpSecondaryWeaponComponent,
     qpMeleeWeapon,
     qpRelic,
-    qpWarframeRelicReward, qpPrimaryWeaponRelicReward
+    qpWarframeRelicReward,
+    qpPrimaryWeaponRelicReward,
+    qpSecondaryWeaponRelicReward
 )
 
 
@@ -23,10 +25,20 @@ User = get_user_model()
 class Command(BaseCommand):
     help = "To update Warframe data."
 
+    def add_arguments(self, parser):
+        parser.add_argument("--warframes", action="store_true", help="To update Warframes")
+        parser.add_argument("--primaryweapons", action="store_true", help="To update Primary Weapons")
+        parser.add_argument("--secondaryweapons", action="store_true", help="To update Secondary Weapons")
+
     def handle(self, *args, **options):
         print("--- Start ``Update Warframe data`` --------------")
-        # self.qp_update_warframes()
-        self.qp_update_primaryweapons()
+        print("options : ", options["warframes"])
+        if options["warframes"]:
+            self.qp_update_warframes()
+        if options["primaryweapons"]:
+            self.qp_update_weapons("Primary")
+        if options["secondaryweapons"]:
+            self.qp_update_weapons("Secondary")
         print("--- End ``Update Warframe data`` ----------------")
 
     def qp_update_warframes(self):
@@ -96,45 +108,75 @@ class Command(BaseCommand):
                     # ===---
         return warframe
     
-    def qp_update_primaryweapons(self):
-        print("\n\n--- Start updating primary weapons --------------")
+    def qp_update_weapons(self, weapontype):
+        print("\n\n--- Start updating weapons --------------")
         weapons = []
         async_weapons = []
-        req = requests.get("https://raw.githubusercontent.com/WFCD/warframe-items/master/data/json/Primary.json")
+        req = requests.get(f"https://raw.githubusercontent.com/WFCD/warframe-items/master/data/json/{weapontype}.json")
         results = json.loads(req.text)
         for result in results:
             if " Prime" in result["name"]:
-                async_weapons.append(executor.submit(self.qp_return_primaryweapons, result))
+                print(weapontype, " : ", result["name"])
+                async_weapons.append(executor.submit(self.qp_return_weapons, result, weapontype))
         completed, pending = wait(async_weapons)
         weapons = [i.result() for i in completed]
-        print("Primary Weapons : ", len(weapons))
-        print("--- End updating primary weapons ----------------\n\n")
+        print("Weapons : ", len(weapons))
+        print("--- End updating weapons ----------------\n\n")
 
-    def qp_return_primaryweapons(self, result):
+    def qp_return_weapons(self, result, weapontype):
         # ===--- weapon ---
-        weapon, created = qpPrimaryWeapon.objects.get_or_create(
-            name=str(result["name"])
-        )
+        if weapontype == "Primary":
+            weapon, created = qpPrimaryWeapon.objects.get_or_create(
+                name=str(result["name"])
+            )
+        elif weapontype == "Secondary":
+            weapon, created = qpSecondaryWeapon.objects.get_or_create(
+                name=str(result["name"])
+            )
         weapon.image_name = str(result["imageName"])
         weapon.save()
         # ===---
         if created:
-            print("\n\Primary Weapon created ........................", str(weapon))
+            print("\n\n", weapontype, " Weapon created ........................", str(weapon))
         else:
-            print("\n\Primary Weapon updated ........................", str(weapon))
+            print("\n\n", weapontype, " Weapon updated ........................", str(weapon))
         # ===---
         if "components" in result:
             for component in result["components"]:
-                if not any(x == component["name"] for x in ["Blueprint", "Barrel", "Blade", "Grip", "Handle", "Lower Limb", "Receiver", "Stock", "String", "Upper Limb"]):
+                if not any(x == component["name"] for x in [
+                    "Blueprint",
+                    "Barrel",
+                    "Blade",
+                    "Grip",
+                    "Handle",
+                    "Link",
+                    "Lower Limb",
+                    "Pouch",
+                    "Receiver",
+                    "Stars",
+                    "Stock",
+                    "String",
+                    "Upper Limb"
+                ]):
                     continue
                 # ===--- weapon component
-                weapon_component, created = qpPrimaryWeaponComponent.objects.get_or_create(
-                    weapon=weapon,
-                    name=str(component["name"]).lower().replace(" ", "")
-                )
+                if weapontype == "Primary":
+                    weapon_component, created = qpPrimaryWeaponComponent.objects.get_or_create(
+                        weapon=weapon,
+                        name=str(component["name"]).lower().replace(" ", "")
+                    )
+                elif weapontype == "Secondary":
+                    weapon_component, created = qpSecondaryWeaponComponent.objects.get_or_create(
+                        weapon=weapon,
+                        name=str(component["name"]).lower().replace(" ", "")
+                    )
+                weapon_component.quantity = int(component["itemCount"])
+                weapon_component.save()
                 # ===---
                 if created:
-                    print("Primary Weapon component created ..............", str(weapon_component))
+                    print(weapontype, " Weapon component created ..............", str(weapon_component))
+                else:
+                    print(weapontype, " Weapon component updated ..............", str(weapon_component))
                 # ===---
                 for drop in component["drops"]:
                     if any(x in drop["location"] for x in ["(Flawless)", "(Exceptional)", "(Radiant)"]):
@@ -149,15 +191,22 @@ class Command(BaseCommand):
                     if created:
                         print("Relic created ...........................", str(relic))
                     # ===--- weapon relic reward ---
-                    reward, created = qpPrimaryWeaponRelicReward.objects.get_or_create(
-                        relic=relic,
-                        component=weapon_component
-                    )
+                    if weapontype == "Primary":
+                        reward, created = qpPrimaryWeaponRelicReward.objects.get_or_create(
+                            relic=relic,
+                            component=weapon_component
+                        )
+                    elif weapontype == "Secondary":
+                        reward, created = qpSecondaryWeaponRelicReward.objects.get_or_create(
+                            relic=relic,
+                            component=weapon_component
+                        )
                     reward.percent = float(drop["chance"])
                     reward.save()
                     # ===---
                     if created:
-                        print("Primary Weapon relic reward created ...........", str(reward))
+                        print(weapontype, " Weapon relic reward created ...........", str(reward))
                     else:
-                        print("Primary Weapon relic reward updated ...........", str(reward))
+                        print(weapontype, " Weapon relic reward updated ...........", str(reward))
                     # ===---
+        return weapon

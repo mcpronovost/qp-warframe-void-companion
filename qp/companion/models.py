@@ -2,7 +2,12 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from qp.warframe.models import qpWarframeComponent, qpPrimaryWeaponComponent
+from qp.warframe.models import (
+    qpWarframeComponent,
+    qpPrimaryWeaponComponent,
+    qpSecondaryWeaponComponent,
+    qpMeleeWeaponComponent
+)
 
 
 class qpUserWarframeComponent(models.Model):
@@ -80,3 +85,78 @@ class qpUserPrimaryWeaponComponent(models.Model):
             str(self.component)
         )
 
+
+class qpUserSecondaryWeaponComponent(models.Model):
+    user = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="secondaryweapon_components",
+        verbose_name=_("User"),
+        blank=False,
+        null=False
+    )
+    component = models.ForeignKey(
+        qpSecondaryWeaponComponent,
+        on_delete=models.CASCADE,
+        related_name="user_components",
+        verbose_name=_("Component"),
+        blank=False,
+        null=False
+    )
+    created_at = models.DateTimeField(
+        verbose_name=_("Created at"),
+        auto_now_add=True
+    )
+    updated_at = models.DateTimeField(
+        verbose_name=_("Updated at"),
+        auto_now=True
+    )
+
+    class Meta:
+        verbose_name = _("Secondary Weapon Component")
+        verbose_name_plural = _("Secondary Weapon Components")
+        ordering = ["user", "component"]
+    
+    def __str__(self):
+        return "%s - %s" % (
+            str(self.user),
+            str(self.component)
+        )
+
+
+class qpUserMeleeWeaponComponent(models.Model):
+    user = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="meleeweapon_components",
+        verbose_name=_("User"),
+        blank=False,
+        null=False
+    )
+    component = models.ForeignKey(
+        qpMeleeWeaponComponent,
+        on_delete=models.CASCADE,
+        related_name="user_components",
+        verbose_name=_("Component"),
+        blank=False,
+        null=False
+    )
+    created_at = models.DateTimeField(
+        verbose_name=_("Created at"),
+        auto_now_add=True
+    )
+    updated_at = models.DateTimeField(
+        verbose_name=_("Updated at"),
+        auto_now=True
+    )
+
+    class Meta:
+        verbose_name = _("Melee Weapon Component")
+        verbose_name_plural = _("Melee Weapon Components")
+        ordering = ["user", "component"]
+    
+    def __str__(self):
+        return "%s - %s" % (
+            str(self.user),
+            str(self.component)
+        )
