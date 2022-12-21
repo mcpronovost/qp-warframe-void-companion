@@ -115,8 +115,7 @@ class Command(BaseCommand):
         req = requests.get(f"https://raw.githubusercontent.com/WFCD/warframe-items/master/data/json/{weapontype}.json")
         results = json.loads(req.text)
         for result in results:
-            if " Prime" in result["name"]:
-                print(weapontype, " : ", result["name"])
+            if " Prime" in result["name"] and result["name"] != "Lato Prime":
                 async_weapons.append(executor.submit(self.qp_return_weapons, result, weapontype))
         completed, pending = wait(async_weapons)
         weapons = [i.result() for i in completed]
@@ -160,53 +159,60 @@ class Command(BaseCommand):
                 ]):
                     continue
                 # ===--- weapon component
-                if weapontype == "Primary":
-                    weapon_component, created = qpPrimaryWeaponComponent.objects.get_or_create(
-                        weapon=weapon,
-                        name=str(component["name"]).lower().replace(" ", "")
-                    )
-                elif weapontype == "Secondary":
-                    weapon_component, created = qpSecondaryWeaponComponent.objects.get_or_create(
-                        weapon=weapon,
-                        name=str(component["name"]).lower().replace(" ", "")
-                    )
-                weapon_component.quantity = int(component["itemCount"])
-                weapon_component.save()
-                # ===---
-                if created:
-                    print(weapontype, " Weapon component created ..............", str(weapon_component))
-                else:
-                    print(weapontype, " Weapon component updated ..............", str(weapon_component))
-                # ===---
-                for drop in component["drops"]:
-                    if any(x in drop["location"] for x in ["(Flawless)", "(Exceptional)", "(Radiant)"]):
-                        continue
-                    d = drop["location"].split(" ")
-                    # ===--- relic ---
-                    relic, created = qpRelic.objects.get_or_create(
-                        era=str(d[0]),
-                        name=str(d[1])
-                    )
+                quantity = int(component["itemCount"])
+                for i in range(quantity):
+                    component_name = str(component["name"]).lower().replace(" ", "")
                     # ===---
-                    if created:
-                        print("Relic created ...........................", str(relic))
-                    # ===--- weapon relic reward ---
                     if weapontype == "Primary":
-                        reward, created = qpPrimaryWeaponRelicReward.objects.get_or_create(
-                            relic=relic,
-                            component=weapon_component
+                        weapon_component, created = qpPrimaryWeaponComponent.objects.get_or_create(
+                            weapon=weapon,
+                            name=component_name,
+                            quantity_count=int(i+1)
                         )
                     elif weapontype == "Secondary":
-                        reward, created = qpSecondaryWeaponRelicReward.objects.get_or_create(
-                            relic=relic,
-                            component=weapon_component
+                        weapon_component, created = qpSecondaryWeaponComponent.objects.get_or_create(
+                            weapon=weapon,
+                            name=component_name,
+                            quantity_count=int(i+1)
                         )
-                    reward.percent = float(drop["chance"])
-                    reward.save()
+                    # ===---
+                    weapon_component.quantity = int(component["itemCount"])
+                    weapon_component.save()
                     # ===---
                     if created:
-                        print(weapontype, " Weapon relic reward created ...........", str(reward))
+                        print(weapontype, " Weapon component created ..............", str(weapon_component))
                     else:
-                        print(weapontype, " Weapon relic reward updated ...........", str(reward))
+                        print(weapontype, " Weapon component updated ..............", str(weapon_component))
                     # ===---
+                    for drop in component["drops"]:
+                        if any(x in drop["location"] for x in ["(Flawless)", "(Exceptional)", "(Radiant)"]):
+                            continue
+                        d = drop["location"].split(" ")
+                        # ===--- relic ---
+                        relic, created = qpRelic.objects.get_or_create(
+                            era=str(d[0]),
+                            name=str(d[1])
+                        )
+                        # ===---
+                        if created:
+                            print("Relic created ...........................", str(relic))
+                        # ===--- weapon relic reward ---
+                        if weapontype == "Primary":
+                            reward, created = qpPrimaryWeaponRelicReward.objects.get_or_create(
+                                relic=relic,
+                                component=weapon_component
+                            )
+                        elif weapontype == "Secondary":
+                            reward, created = qpSecondaryWeaponRelicReward.objects.get_or_create(
+                                relic=relic,
+                                component=weapon_component
+                            )
+                        reward.percent = float(drop["chance"])
+                        reward.save()
+                        # ===---
+                        if created:
+                            print(weapontype, " Weapon relic reward created ...........", str(reward))
+                        else:
+                            print(weapontype, " Weapon relic reward updated ...........", str(reward))
+                        # ===---
         return weapon

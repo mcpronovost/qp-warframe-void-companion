@@ -71,6 +71,12 @@ class qpWarframeComponent(models.Model):
         blank=False,
         null=False
     )
+    quantity_count = models.PositiveSmallIntegerField(
+        verbose_name=_("Count"),
+        default=1,
+        blank=False,
+        null=False
+    )
 
     class Meta:
         verbose_name = _("Warframe Component")
@@ -127,6 +133,12 @@ class qpPrimaryWeaponComponent(models.Model):
     )
     quantity = models.PositiveSmallIntegerField(
         verbose_name=_("Quantity"),
+        default=1,
+        blank=False,
+        null=False
+    )
+    quantity_count = models.PositiveSmallIntegerField(
+        verbose_name=_("Count"),
         default=1,
         blank=False,
         null=False
@@ -191,6 +203,12 @@ class qpSecondaryWeaponComponent(models.Model):
         blank=False,
         null=False
     )
+    quantity_count = models.PositiveSmallIntegerField(
+        verbose_name=_("Count"),
+        default=1,
+        blank=False,
+        null=False
+    )
 
     class Meta:
         verbose_name = _("Secondary Weapon Component")
@@ -247,6 +265,12 @@ class qpMeleeWeaponComponent(models.Model):
     )
     quantity = models.PositiveSmallIntegerField(
         verbose_name=_("Quantity"),
+        default=1,
+        blank=False,
+        null=False
+    )
+    quantity_count = models.PositiveSmallIntegerField(
+        verbose_name=_("Count"),
         default=1,
         blank=False,
         null=False
