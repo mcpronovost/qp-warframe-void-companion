@@ -95,7 +95,7 @@ class qpWarframeRelicRewardSimpleSerializer(serializers.ModelSerializer):
     def get_is_owned(self, obj):
         try:
             request = self.context.get("request")
-            kwargs = self.context.get("kwargs")
+            kwargs = self.context.get("kwargs", {})
             if "slug" in kwargs:
                 user = User.objects.filter(profile__slug=str(kwargs["slug"])).first()
             else:
@@ -106,6 +106,5 @@ class qpWarframeRelicRewardSimpleSerializer(serializers.ModelSerializer):
                 ).first()
                 return bool(result)
         except Exception as e:
-            print("Error : ", e)
             pass
         return False

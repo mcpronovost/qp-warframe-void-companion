@@ -4,6 +4,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from django.db.models import Q
+from django.db.models.functions import Substr, Length
 
 from qp.warframe.models import (
     qpWarframeComponent,
@@ -35,6 +36,17 @@ class qpUserRelicsListView(ListAPIView):
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset(request))
+        queryset = queryset.annotate(
+            letter=Substr("name", 1, 1),
+            length=Length("name")
+        ).extra(
+            select={
+                "is1":" era='Lith'",
+                "is2": " era='Meso'",
+                "is3": " era='Neo'",
+                "is4": " era='Axi'"
+            }
+        ).extra(order_by = ["-is1", "-is2", "-is3", "-is4", "letter", "length", "name"])
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, context={"request": request, "kwargs": kwargs}, many=True)

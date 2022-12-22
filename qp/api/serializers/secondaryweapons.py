@@ -90,11 +90,12 @@ class qpSecondaryWeaponRelicRewardSimpleSerializer(serializers.ModelSerializer):
     class Meta:
         model = qpSecondaryWeaponRelicReward
         fields = ["id", "relic", "component", "percent", "is_owned"]
+        depth = 1
     
     def get_is_owned(self, obj):
         try:
             request = self.context.get("request")
-            kwargs = self.context.get("kwargs")
+            kwargs = self.context.get("kwargs", {})
             if "slug" in kwargs:
                 user = User.objects.filter(profile__slug=str(kwargs["slug"])).first()
             else:
