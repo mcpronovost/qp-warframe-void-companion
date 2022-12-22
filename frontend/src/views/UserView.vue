@@ -70,6 +70,20 @@ const doRelicsList = async (page: string|null, era: string|null, update = false)
     }
 }
 
+const has_rarity = (relic: TypeRelic, has_type: "gold"|"silver"|"bronze") => {
+  const is_ok = (r: any) => {
+    if (has_type == "gold" && r.is_owned === false && r.percent < 0.10) return true
+    if (has_type == "silver" && r.is_owned === false && r.percent < 0.20 && r.percent > 0.09) return true
+    if (has_type == "bronze" && r.is_owned === false && r.percent > 0.19) return true
+    return false
+  }
+  if (relic.warframe_rewards?.some(r => is_ok(r))) return true
+  if (relic.primaryweapon_rewards?.some(r => is_ok(r))) return true
+  if (relic.secondaryweapon_rewards?.some(r => is_ok(r))) return true
+  if (relic.meleeweapon_rewards?.some(r => is_ok(r))) return true
+  return false
+}
+
 const openDrawerRelic = (relic: TypeRelic|null = null) => {
   dataDrawerRelic.value = relic
   showDrawerRelic.value = true
@@ -123,13 +137,13 @@ onUnmounted(() => {
                 <div class="qp-relics-name">
                   <span v-text="`${relic.era} ${relic.name}`"></span>
                 </div>
-                <div v-if="relic.components.length > 1" class="qp-relics-components-count">
+                <div v-if="relic.components?.length > 1" class="qp-relics-components-count">
                   <span v-text="`x${relic.components.length}`"></span>
                 </div>
                 <div class="qp-relics-rarities">
-                  <span v-if="relic.rarities.gold" class="qp-relics-rarities-gold"></span>
-                  <span v-if="relic.rarities.silver" class="qp-relics-rarities-silver"></span>
-                  <span v-if="relic.rarities.bronze" class="qp-relics-rarities-bronze"></span>
+                  <span v-if="has_rarity(relic, 'gold')" class="qp-relics-rarities-gold"></span>
+                  <span v-if="has_rarity(relic, 'silver')" class="qp-relics-rarities-silver"></span>
+                  <span v-if="has_rarity(relic, 'bronze')" class="qp-relics-rarities-bronze"></span>
                 </div>
               </div>
             </div>

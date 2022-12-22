@@ -1,0 +1,1 @@
+import{d as p,f as e,c as o,w as s,e as t}from"./index-1f7384cd.js";const l=p({__name:"WarframesView",setup(_){return(n,c)=>{const a=t("router-view"),r=t("qp-page");return e(),o(r,null,{default:s(()=>[(e(),o(a,{key:n.$route.fullPath}))]),_:1})}}});export{l as default};

@@ -91,5 +91,6 @@
   "blades": "Lames",
   "guard": "Garde",
   "hilt": "Quillon",
-  "chain": "Chaîne"
+  "chain": "Chaîne",
+  "Yourenotauthorized": "Vous ne possédez pas les permissions requises."
 }

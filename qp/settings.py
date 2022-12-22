@@ -238,7 +238,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Logging Settings
 # https://docs.djangoproject.com/en/4.1/topics/logging/
 
-LOGGING = {
+LOGGING_old = {
     "version": 1,
     "disable_existing_loggers": False,
     "filters": {    

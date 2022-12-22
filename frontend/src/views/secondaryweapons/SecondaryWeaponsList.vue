@@ -86,7 +86,7 @@ onMounted(() => {doWeaponsList(null, false)})
   <div v-if="!isLoading && !hasError" class="qp-container">
     <qp-header :title="$t('SecondaryWeapons')" page-type="weapons" />
     <div class="qp-weapons-actions">
-      <el-button-group>
+      <el-button-group v-if="rat">
         <el-button v-if="hide_completed_warframes" @click="showCompletedWeapons()"><span v-text="$t('ShowCompleted')"></span></el-button>
         <el-button v-else @click="hideCompletedWeapons()"><span v-text="$t('HideCompleted')"></span></el-button>
       </el-button-group>

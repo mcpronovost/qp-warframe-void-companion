@@ -145,7 +145,7 @@ onMounted(() => {doWeaponDetail()})
       <el-col :span="24" :md="14" class="qp-weapons-detail-info">
         <div class="qp-weapons-actions">
           <div class="qp-weapons-actions-extra">
-            <el-button-group>
+            <el-button-group v-if="rat">
               <el-button v-if="weapon.completion < 100" @click="doWeaponOwn(0, true)"><span v-text="$t('CompleteAll')"></span></el-button>
               <el-button v-else @click="doWeaponUnown(0, true)"><span v-text="$t('RemoveAll')"></span></el-button>
             </el-button-group>

@@ -16,6 +16,7 @@ from qp.api.views.warframes import qpWarframeListView, qpWarframeDetailView
 from qp.api.views.primaryweapons import qpPrimaryWeaponsListView, qpPrimaryWeaponsDetailView
 from qp.api.views.secondaryweapons import qpSecondaryWeaponsListView, qpSecondaryWeaponsDetailView
 from qp.api.views.meleeweapons import qpMeleeWeaponsListView, qpMeleeWeaponsDetailView
+from qp.api.views.relics import qpRelicsListView
 
 urlpatterns = [
     path("", qpPingView.as_view()),
@@ -44,6 +45,8 @@ urlpatterns = [
 
     path("melee-weapons/", qpMeleeWeaponsListView.as_view()),
     path("melee-weapons/<int:pk>/", qpMeleeWeaponsDetailView.as_view()),
+
+    path("relics/", qpRelicsListView.as_view()),
 
     path("register/", qpRegisterView.as_view(), name="auth_register"),
     path("login/", qpLoginView.as_view()),

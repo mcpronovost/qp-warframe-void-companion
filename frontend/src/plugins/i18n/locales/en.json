@@ -91,5 +91,6 @@
   "blades": "Blades",
   "guard": "Guard",
   "hilt": "Hilt",
-  "chain": "Chain"
+  "chain": "Chain",
+  "Yourenotauthorized": "You're not authorized."
 }

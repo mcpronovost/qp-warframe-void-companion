@@ -3,7 +3,6 @@ import type { TypeRelic } from "../types/warframe";
 import { ref, onMounted, onUnmounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useI18n } from "vue-i18n";
-import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import { WEB, API, HEADERS } from "../plugins/store/index";
 import { storeUser } from "../plugins/store";
@@ -14,8 +13,6 @@ import imgRelicNeo from "../assets/img/relic_neo.png";
 import imgRelicAxi from "../assets/img/relic_axi.png";
 
 const { t } = useI18n()
-
-const router = useRouter()
 
 const useStoreUser = storeUser()
 const { rat, lang, slug } = storeToRefs(useStoreUser)
@@ -38,40 +35,81 @@ const currentEra = ref<string|null>(null)
 const winWidth = ref(window.innerWidth)
 
 const doRelicsList = async (page: string|null, era: string|null, update = true) => {
-    if (!update) isLoading.value = true
-    else isLoadingUpdate.value = true
-    hasError.value = null
-    // ===---
-    let query = page ? `?page=${page}` : "?page=1"
-    query += era ? `&era=${era}` : ""
-    // ===---
-    currentEra.value = era
-    // ===---
+  if (!update) isLoading.value = true
+  else isLoadingUpdate.value = true
+  hasError.value = null
+  // ===---
+  let query = page ? `?page=${page}` : "?page=1"
+  query += era ? `&era=${era}` : ""
+  // ===---
+  currentEra.value = era
+  // ===---
+  if (rat.value) {
     try {
-        let f = await fetch(`${API}/me/relics/${query}`, {
-            method: "GET",
-            headers: HEADERS(rat.value, lang.value)
-        })
-        .then((r) => {return r})
-        .catch(() => {return new Response(null,{status: 400})})
-        if (f.status === 200) {
-            let r = await f.json()
-            relics_size.value = r.size
-            relics_total.value = r.count
-            listRelicsOriginal.value = r.results
-            listRelics.value = r.results
-            isLoading.value = false
-            isLoadingUpdate.value = false
-        } else {
-            throw f.status
-        }
-    } catch (e) {
-        if (e === 401) ElMessage.error("not authorized")
-        else ElMessage.error(t("AnErrorOccurred"))
-        hasError.value = `${e}`
+      let f = await fetch(`${API}/me/relics/${query}`, {
+        method: "GET",
+        headers: HEADERS(rat.value, lang.value)
+      })
+      .then((r) => {return r})
+      .catch(() => {return new Response(null,{status: 400})})
+      if (f.status === 200) {
+        let r = await f.json()
+        relics_size.value = r.size
+        relics_total.value = r.count
+        listRelicsOriginal.value = r.results
+        listRelics.value = r.results
         isLoading.value = false
         isLoadingUpdate.value = false
+      } else {
+        throw f.status
+      }
+    } catch (e) {
+      if (e === 401) ElMessage.error(t("Yourenotauthorized"))
+      else ElMessage.error(t("AnErrorOccurred"))
+      hasError.value = `${e}`
+      isLoading.value = false
+      isLoadingUpdate.value = false
     }
+  } else {
+    try {
+      let f = await fetch(`${API}/relics/${query}`, {
+        method: "GET"
+      })
+      .then((r) => {return r})
+      .catch(() => {return new Response(null,{status: 400})})
+      if (f.status === 200) {
+        let r = await f.json()
+        relics_size.value = r.size
+        relics_total.value = r.count
+        listRelicsOriginal.value = r.results
+        listRelics.value = r.results
+        isLoading.value = false
+        isLoadingUpdate.value = false
+      } else {
+        throw f.status
+      }
+    } catch (e) {
+      if (e === 401) ElMessage.error(t("Yourenotauthorized"))
+      else ElMessage.error(t("AnErrorOccurred"))
+      hasError.value = `${e}`
+      isLoading.value = false
+      isLoadingUpdate.value = false
+    }
+  }
+}
+
+const has_rarity = (relic: TypeRelic, has_type: "gold"|"silver"|"bronze") => {
+  const is_ok = (r: any) => {
+    if (has_type == "gold" && r.is_owned === false && r.percent < 0.10) return true
+    if (has_type == "silver" && r.is_owned === false && r.percent < 0.20 && r.percent > 0.09) return true
+    if (has_type == "bronze" && r.is_owned === false && r.percent > 0.19) return true
+    return false
+  }
+  if (relic.warframe_rewards?.some(r => is_ok(r))) return true
+  if (relic.primaryweapon_rewards?.some(r => is_ok(r))) return true
+  if (relic.secondaryweapon_rewards?.some(r => is_ok(r))) return true
+  if (relic.meleeweapon_rewards?.some(r => is_ok(r))) return true
+  return false
 }
 
 const openDrawerRelic = (relic: TypeRelic|null = null) => {
@@ -94,11 +132,8 @@ const doCopyShareLink = () => {
 }
 
 onMounted(() => {
-  if (rat.value) {
-    doRelicsList(null, null, false)
-    window.addEventListener("resize", doUpdateWinWidth)
-  }
-  else router.push({name: "AuthLogin"})
+  doRelicsList(null, null, false)
+  window.addEventListener("resize", doUpdateWinWidth)
 })
 
 onUnmounted(() => {
@@ -112,7 +147,7 @@ onUnmounted(() => {
       <qp-header :title="$t('Relics')" page-type="relics" />
       <div class="qp-relics-actions">
         <div class="qp-relics-actions-extra">
-          <el-button-group>
+          <el-button-group v-if="rat">
             <el-button @click="doCopyShareLink()">
               <el-icon class="mdi mdi-share-variant" />
               <span v-text="$t('Share')"></span>
@@ -145,13 +180,13 @@ onUnmounted(() => {
                 <div class="qp-relics-name">
                   <span v-text="`${relic.era} ${relic.name}`"></span>
                 </div>
-                <div v-if="relic.components.length > 1" class="qp-relics-components-count">
+                <div v-if="relic.components?.length > 1" class="qp-relics-components-count">
                   <span v-text="`x${relic.components.length}`"></span>
                 </div>
                 <div class="qp-relics-rarities">
-                  <span v-if="relic.rarities.gold" class="qp-relics-rarities-gold"></span>
-                  <span v-if="relic.rarities.silver" class="qp-relics-rarities-silver"></span>
-                  <span v-if="relic.rarities.bronze" class="qp-relics-rarities-bronze"></span>
+                  <span v-if="has_rarity(relic, 'gold')" class="qp-relics-rarities-gold"></span>
+                  <span v-if="has_rarity(relic, 'silver')" class="qp-relics-rarities-silver"></span>
+                  <span v-if="has_rarity(relic, 'bronze')" class="qp-relics-rarities-bronze"></span>
                 </div>
               </div>
             </div>
@@ -162,7 +197,7 @@ onUnmounted(() => {
         </el-col>
       </el-row>
       <!---->
-      <el-drawer v-model="showDrawerRelic" direction="rtl" :size="winWidth < 992 ? '90%' : '30%'" :before-close="closeDrawerRelic">
+      <el-drawer v-model="showDrawerRelic" direction="rtl" :size="winWidth < 992 ? '90%' : '30%'" :before-close="closeDrawerRelic" class="qp-relic-drawer">
         <template #header>
           <span v-if="dataDrawerRelic" class="el-drawer__title" v-text="`${dataDrawerRelic.era} ${dataDrawerRelic.name}`"></span>
         </template>

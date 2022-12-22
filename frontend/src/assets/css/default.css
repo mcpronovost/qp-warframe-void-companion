@@ -217,6 +217,13 @@ body .el-popper.qp-topbar-popper .el-dropdown-menu {
 }
 
 
+body .qp-relic-drawer .el-drawer__body {
+  padding-top: 0;
+  padding-right: 0;
+  padding-bottom: 0;
+}
+
+
 .v-enter-active,
 .v-leave-active {
   transition: opacity 0.5s ease;
@@ -239,3 +246,4 @@ body .el-popper.qp-topbar-popper .el-dropdown-menu {
   opacity: 0;
   transform: scale(0);
 }
+

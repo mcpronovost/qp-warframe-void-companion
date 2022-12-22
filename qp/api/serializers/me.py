@@ -1,7 +1,12 @@
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 from rest_framework import serializers
 
+from qp.api.serializers.warframes import qpWarframeRelicRewardSimpleSerializer
+from qp.api.serializers.primaryweapons import qpPrimaryWeaponRelicRewardSimpleSerializer
+from qp.api.serializers.secondaryweapons import qpSecondaryWeaponRelicRewardSimpleSerializer
+from qp.api.serializers.meleeweapons import qpMeleeWeaponRelicRewardSimpleSerializer
 from qp.users.models import qpUserProfile
 from qp.companion.models import (
     qpUserWarframeComponent,
@@ -53,12 +58,23 @@ class qpMeMeleeWeaponComponentsSerializer(serializers.ModelSerializer):
 
 
 class qpMeRelicsSerializer(serializers.ModelSerializer):
-    components = serializers.SerializerMethodField()
-    rarities = serializers.SerializerMethodField()
+    #components = serializers.SerializerMethodField()
+    #rarities = serializers.SerializerMethodField()
+    warframe_rewards = qpWarframeRelicRewardSimpleSerializer(many=True)
+    primaryweapon_rewards = qpPrimaryWeaponRelicRewardSimpleSerializer(many=True)
+    secondaryweapon_rewards = qpSecondaryWeaponRelicRewardSimpleSerializer(many=True)
+    meleeweapon_rewards = qpMeleeWeaponRelicRewardSimpleSerializer(many=True)
 
     class Meta:
         model = qpRelic
-        fields = ["id", "era", "name", "components", "rarities"]
+        fields = [
+            "id", "era", "name",
+            "warframe_rewards",
+            "primaryweapon_rewards",
+            "secondaryweapon_rewards",
+            "meleeweapon_rewards",
+            # "components", "rarities"
+        ]
     
     def get_components(self, obj):
         result = []
@@ -109,7 +125,7 @@ class qpMeRelicsSerializer(serializers.ModelSerializer):
             print("Error : ", e)
             pass
         return result
-    
+
     def get_rarities(self, obj):
         result = {
             "bronze": False,

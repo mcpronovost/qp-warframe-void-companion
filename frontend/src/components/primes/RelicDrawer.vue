@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { PropType } from "vue";
-import type { TypeRelic } from "../../types/warframe";
+import type { TypeRelic, TypeReward } from "../../types/warframe";
 import { ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useI18n } from "vue-i18n";
 import { ElMessage } from "element-plus";
 import { API, HEADERS } from "../../plugins/store/index";
 import { storeUser } from "../../plugins/store";
-import QpWeaponImage from "../primes/WeaponImage.vue";
+import QpRelicDrawerItem from "../primes/RelicDrawerItem.vue";
 
 const { t } = useI18n()
 
@@ -63,36 +63,38 @@ const doComponentOwn = async (id: Number, component_type: String) => {
       isLoadingOwning.value = false
   }
 }
+
+const not_owned = (relics: Array<TypeReward>|undefined) => {
+  return relics?.filter(r => (!r.is_owned))
+}
 </script>
 
 <template>
-  <div>
-    <ul v-if="props.relic?.components" v-loading="isLoadingOwning" class="qp-relics-drawer-components-list">
-      <li v-for="(component, n) in props.relic.components" :key="`warframe-components-${n}`" :class="`qp-relics-drawer-components-item${readonly ? ' qp-readonly' : ''}`" @click="!readonly ? doComponentOwn(component.id, component.type) : undefined">
-        <div class="qp-relics-drawer-components-item-wrapper">
-          <div class="qp-relics-drawer-components-img">
-            <QpWeaponImage :component="component.component" />
-          </div>
-          <div>
-            <div class="qp-relics-drawer-components-name">
-              <span v-text="component.name"></span>
-            </div>
-            <div class="qp-relics-drawer-rarities">
-              <span v-if="component.percent < 10" class="qp-relics-drawer-rarities-gold"></span>
-              <span v-else-if="component.percent > 9 && component.percent < 20" class="qp-relics-drawer-rarities-silver"></span>
-              <span v-else-if="component.percent > 19" class="qp-relics-drawer-rarities-bronze"></span>
-            </div>
-          </div>
-        </div>
+  <el-scrollbar height="100%">
+    <ul v-if="props.relic" v-loading="isLoadingOwning" class="qp-relics-drawer-components-list">
+      <li v-for="(component, n) in not_owned(props.relic.warframe_rewards)" :key="`warframe-components-${n}`" :class="`qp-relics-drawer-components-item${readonly ? ' qp-readonly' : ''}`" @click="!readonly ? doComponentOwn(component.component.id, 'warframes') : undefined">
+        <QpRelicDrawerItem :component="component" />
+      </li>
+      <li v-for="(component, n) in not_owned(props.relic.primaryweapon_rewards)" :key="`primaryweapon-components-${n}`" :class="`qp-relics-drawer-components-item${readonly ? ' qp-readonly' : ''}`" @click="!readonly ? doComponentOwn(component.component.id, 'primary-weapons') : undefined">
+        <QpRelicDrawerItem :component="component" />
+      </li>
+      <li v-for="(component, n) in not_owned(props.relic.secondaryweapon_rewards)" :key="`secondaryweapon-components-${n}`" :class="`qp-relics-drawer-components-item${readonly ? ' qp-readonly' : ''}`" @click="!readonly ? doComponentOwn(component.component.id, 'secondary-weapons') : undefined">
+        <QpRelicDrawerItem :component="component" />
+      </li>
+      <li v-for="(component, n) in not_owned(props.relic.meleeweapon_rewards)" :key="`meleeweapon-components-${n}`" :class="`qp-relics-drawer-components-item${readonly ? ' qp-readonly' : ''}`" @click="!readonly ? doComponentOwn(component.component.id, 'melee-weapons') : undefined">
+        <QpRelicDrawerItem :component="component" />
       </li>
     </ul>
-  </div>
+  </el-scrollbar>
 </template>
 
 <style scoped>
 .qp-relics-drawer-components-list {
   list-style: none;
-  padding: 0;
+  padding-top: 0;
+  padding-left: 0;
+  padding-right: var(--el-drawer-padding-primary);
+  padding-bottom: var(--el-drawer-padding-primary);
   margin: 0;
 }
 .qp-relics-drawer-components-item {

@@ -5,7 +5,13 @@ from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 
-from qp.warframe.models import qpWarframeComponent, qpPrimaryWeaponComponent, qpRelic
+from qp.warframe.models import (
+    qpWarframeComponent,
+    qpPrimaryWeaponComponent,
+    qpSecondaryWeaponComponent,
+    qpMeleeWeaponComponent,
+    qpRelic
+)
 from qp.api.serializers.users import qpUserRelicsSerializer
 
 
@@ -51,10 +57,18 @@ class qpUserRelicsListView(ListAPIView):
                 unowned_primaryweapon_components = qpPrimaryWeaponComponent.objects.exclude(
                     user_components__in=user.primaryweapon_components.all()
                 )
+                unowned_secondaryweapon_components = qpSecondaryWeaponComponent.objects.exclude(
+                    user_components__in=user.secondaryweapon_components.all()
+                )
+                unowned_meleeweapon_components = qpMeleeWeaponComponent.objects.exclude(
+                    user_components__in=user.meleeweapon_components.all()
+                )
                 # ===---
                 all_relics = qpRelic.objects.filter(
                     Q(warframe_rewards__component__in=unowned_warframe_components) |
-                    Q(primaryweapon_rewards__component__in=unowned_primaryweapon_components)
+                    Q(primaryweapon_rewards__component__in=unowned_primaryweapon_components) |
+                    Q(secondaryweapon_rewards__component__in=unowned_secondaryweapon_components) |
+                    Q(meleeweapon_rewards__component__in=unowned_meleeweapon_components)
                 )
                 # ===---
                 if era is not None:

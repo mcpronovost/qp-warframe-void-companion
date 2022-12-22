@@ -4,6 +4,7 @@ from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView, CreateAP
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from django.db.models import Q
+from django.db.models.functions import Substr, Length
 from django.http import QueryDict
 
 from qp.warframe.models import (
@@ -41,7 +42,7 @@ class qpMeView(RetrieveUpdateAPIView):
         try:
             return self.request.user.profile
         except Exception as e:
-            print("Error on qpMeView : ", e)
+            print("Error : ", e)
         return None
 
     def patch(self, request, *args, **kwargs):
@@ -392,20 +393,25 @@ class qpMeRelicsListView(ListAPIView):
     permission_classes = [IsAuthenticated]
     queryset = qpRelic.objects.all()
     serializer_class = qpMeRelicsSerializer
+    page_size = 30
 
     def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
+        result = self.list(request, *args, **kwargs)
+        return result
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset(request))
-        queryset = queryset.extra(
+        queryset = queryset.annotate(
+            letter=Substr("name", 1, 1),
+            length=Length("name")
+        ).extra(
             select={
                 "is1":" era='Lith'",
                 "is2": " era='Meso'",
                 "is3": " era='Neo'",
                 "is4": " era='Axi'"
             }
-        ).extra(order_by = ["-is1", "-is2", "-is3", "-is4"])
+        ).extra(order_by = ["-is1", "-is2", "-is3", "-is4", "letter", "length", "name"])
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
@@ -414,20 +420,28 @@ class qpMeRelicsListView(ListAPIView):
         return Response(serializer.data)
 
     def get_queryset(self, request):
-        queryset = qpRelic.objects.none()
         era = request.GET.get("era", None)
         try:
-            if request.user.is_authenticated:
+            user = request.user
+            if user.is_authenticated:
                 unowned_warframe_components = qpWarframeComponent.objects.exclude(
-                    user_components__in=request.user.warframe_components.all()
+                    user_components__in=user.warframe_components.all()
                 )
                 unowned_primaryweapon_components = qpPrimaryWeaponComponent.objects.exclude(
-                    user_components__in=request.user.primaryweapon_components.all()
+                    user_components__in=user.primaryweapon_components.all()
+                )
+                unowned_secondaryweapon_components = qpSecondaryWeaponComponent.objects.exclude(
+                    user_components__in=user.secondaryweapon_components.all()
+                )
+                unowned_meleeweapon_components = qpMeleeWeaponComponent.objects.exclude(
+                    user_components__in=user.meleeweapon_components.all()
                 )
                 # ===---
                 all_relics = qpRelic.objects.filter(
                     Q(warframe_rewards__component__in=unowned_warframe_components) |
-                    Q(primaryweapon_rewards__component__in=unowned_primaryweapon_components)
+                    Q(primaryweapon_rewards__component__in=unowned_primaryweapon_components) |
+                    Q(secondaryweapon_rewards__component__in=unowned_secondaryweapon_components) |
+                    Q(meleeweapon_rewards__component__in=unowned_meleeweapon_components)
                 )
                 # ===---
                 if era is not None:
@@ -438,4 +452,4 @@ class qpMeRelicsListView(ListAPIView):
         except Exception as e:
             print("Error : ", e)
             pass
-        return queryset
+        return qpRelic.objects.none()
