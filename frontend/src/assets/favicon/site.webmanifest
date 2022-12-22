@@ -4,17 +4,17 @@
     "description": "Manage your Warframe relics and more.",
     "icons": [
         {
-            "src": "http://localhost:8000/static/favicon/android-chrome-192x192.png",
+            "src": "https://qapikur.pythonanywhere.com/static/favicon/android-chrome-192x192.png",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "http://localhost:8000/static/favicon/android-chrome-512x512.png",
+            "src": "https://qapikur.pythonanywhere.com/static/favicon/android-chrome-512x512.png",
             "sizes": "512x512",
             "type": "image/png"
         }
     ],
-    "theme_color": "#89a411",
+    "theme_color": "#3db99b",
     "background_color": "#1c1c1d",
     "orientation": "landscape",
     "display": "standalone"

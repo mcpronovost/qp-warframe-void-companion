@@ -6,11 +6,8 @@ import { useI18n } from "vue-i18n";
 import { ElMessage } from "element-plus";
 import { WEB, API, HEADERS } from "../plugins/store/index";
 import { storeUser } from "../plugins/store";
-import qpRelicDrawer from "../components/primes/RelicDrawer.vue";
-import imgRelicLith from "../assets/img/relic_lith.png";
-import imgRelicMeso from "../assets/img/relic_meso.png";
-import imgRelicNeo from "../assets/img/relic_neo.png";
-import imgRelicAxi from "../assets/img/relic_axi.png";
+import QpRelicDrawer from "../components/primes/RelicDrawer.vue";
+import QpRelicItem from "../components/primes/RelicItem.vue";
 
 const { t } = useI18n()
 
@@ -44,72 +41,40 @@ const doRelicsList = async (page: string|null, era: string|null, update = true) 
   // ===---
   currentEra.value = era
   // ===---
-  if (rat.value) {
-    try {
-      let f = await fetch(`${API}/me/relics/${query}`, {
+  let f: Response;
+  try {
+    if (rat.value) {
+      f = await fetch(`${API}/me/relics/${query}`, {
         method: "GET",
         headers: HEADERS(rat.value, lang.value)
       })
       .then((r) => {return r})
       .catch(() => {return new Response(null,{status: 400})})
-      if (f.status === 200) {
-        let r = await f.json()
-        relics_size.value = r.size
-        relics_total.value = r.count
-        listRelicsOriginal.value = r.results
-        listRelics.value = r.results
-        isLoading.value = false
-        isLoadingUpdate.value = false
-      } else {
-        throw f.status
-      }
-    } catch (e) {
-      if (e === 401) ElMessage.error(t("Yourenotauthorized"))
-      else ElMessage.error(t("AnErrorOccurred"))
-      hasError.value = `${e}`
-      isLoading.value = false
-      isLoadingUpdate.value = false
-    }
-  } else {
-    try {
-      let f = await fetch(`${API}/relics/${query}`, {
+    } else {
+      f = await fetch(`${API}/relics/${query}`, {
         method: "GET"
       })
       .then((r) => {return r})
       .catch(() => {return new Response(null,{status: 400})})
-      if (f.status === 200) {
-        let r = await f.json()
-        relics_size.value = r.size
-        relics_total.value = r.count
-        listRelicsOriginal.value = r.results
-        listRelics.value = r.results
-        isLoading.value = false
-        isLoadingUpdate.value = false
-      } else {
-        throw f.status
-      }
-    } catch (e) {
-      if (e === 401) ElMessage.error(t("Yourenotauthorized"))
-      else ElMessage.error(t("AnErrorOccurred"))
-      hasError.value = `${e}`
+    }
+    if (f.status === 200) {
+      let r = await f.json()
+      relics_size.value = r.size
+      relics_total.value = r.count
+      listRelicsOriginal.value = r.results
+      listRelics.value = r.results
       isLoading.value = false
       isLoadingUpdate.value = false
+    } else {
+      throw f.status
     }
+  } catch (e) {
+    if (e === 401) ElMessage.error(t("Yourenotauthorized"))
+    else ElMessage.error(t("AnErrorOccurred"))
+    hasError.value = `${e}`
+    isLoading.value = false
+    isLoadingUpdate.value = false
   }
-}
-
-const has_rarity = (relic: TypeRelic, has_type: "gold"|"silver"|"bronze") => {
-  const is_ok = (r: any) => {
-    if (has_type == "gold" && r.is_owned === false && r.percent < 0.10) return true
-    if (has_type == "silver" && r.is_owned === false && r.percent < 0.20 && r.percent > 0.09) return true
-    if (has_type == "bronze" && r.is_owned === false && r.percent > 0.19) return true
-    return false
-  }
-  if (relic.warframe_rewards?.some(r => is_ok(r))) return true
-  if (relic.primaryweapon_rewards?.some(r => is_ok(r))) return true
-  if (relic.secondaryweapon_rewards?.some(r => is_ok(r))) return true
-  if (relic.meleeweapon_rewards?.some(r => is_ok(r))) return true
-  return false
 }
 
 const openDrawerRelic = (relic: TypeRelic|null = null) => {
@@ -167,29 +132,7 @@ onUnmounted(() => {
       <el-row class="qp-relics-list">
         <TransitionGroup name="list" mode="out-in">
           <el-col v-for="(relic, n) in listRelics" :key="`relics-${n}`" v-loading="isLoadingUpdate" :span="12" :sm="8" :md="6" :lg="4" class="qp-relics-col">
-            <div class="qp-relics-item" @click="openDrawerRelic(relic)">
-              <div class="qp-relics-item-wrapper">
-                <div class="qp-relics-image">
-                  <Transition>
-                    <el-image v-if="relic.era == 'Lith'" :src="imgRelicLith" />
-                    <el-image v-else-if="relic.era == 'Meso'" :src="imgRelicMeso" />
-                    <el-image v-else-if="relic.era == 'Neo'" :src="imgRelicNeo" />
-                    <el-image v-else-if="relic.era == 'Axi'" :src="imgRelicAxi" />
-                  </Transition>
-                </div>
-                <div class="qp-relics-name">
-                  <span v-text="`${relic.era} ${relic.name}`"></span>
-                </div>
-                <div v-if="relic.components?.length > 1" class="qp-relics-components-count">
-                  <span v-text="`x${relic.components.length}`"></span>
-                </div>
-                <div class="qp-relics-rarities">
-                  <span v-if="has_rarity(relic, 'gold')" class="qp-relics-rarities-gold"></span>
-                  <span v-if="has_rarity(relic, 'silver')" class="qp-relics-rarities-silver"></span>
-                  <span v-if="has_rarity(relic, 'bronze')" class="qp-relics-rarities-bronze"></span>
-                </div>
-              </div>
-            </div>
+            <QpRelicItem :relic="relic" @click="openDrawerRelic(relic)" />
           </el-col>
         </TransitionGroup>
         <el-col>
@@ -201,7 +144,7 @@ onUnmounted(() => {
         <template #header>
           <span v-if="dataDrawerRelic" class="el-drawer__title" v-text="`${dataDrawerRelic.era} ${dataDrawerRelic.name}`"></span>
         </template>
-        <qpRelicDrawer v-if="dataDrawerRelic" :relic="dataDrawerRelic" @close="closeDrawerRelic(); doRelicsList(null, currentEra, true);" />
+        <QpRelicDrawer v-if="dataDrawerRelic" :relic="dataDrawerRelic" @close="closeDrawerRelic(); doRelicsList(null, currentEra, true);" />
       </el-drawer>
     </div>
     <qp-notfound v-else-if="!isLoading" />
@@ -230,83 +173,5 @@ onUnmounted(() => {
 }
 .qp-relics-col {
   transition: all 0.5s;
-}
-.qp-relics-item {
-  text-align: center;
-  list-style: none;
-  display: block;
-  flex: 0 1 20%;
-  padding: 0;
-  margin: 0;
-}
-.qp-relics-item:hover {
-  cursor: pointer;
-  opacity: 0.8;
-}
-.qp-relics-item-wrapper {
-  background-color: #222324;
-  border: 1px solid #404040;
-  box-sizing: border-box;
-  overflow: hidden;
-  display: flex;
-  height: 100%;
-  flex-direction: column;
-  justify-content: space-between;
-  position: relative;
-  padding: 0;
-  margin: 0;
-}
-.qp-relics-image {
-  width: 100%;
-  max-width: 120px;
-  aspect-ratio: 1/1;
-  position: relative;
-  padding: 0;
-  margin: 0 auto;
-}
-.qp-relics-image .el-image {
-  width: 100%;
-  max-width: 120px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-.qp-relics-name {
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 120%;
-  padding: 4px 6px;
-}
-.qp-relics-components-count {
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 120%;
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  opacity: 0.8;
-}
-.qp-relics-rarities {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-}
-.qp-relics-rarities > span {
-  background-color: var(--qp-primary);
-  display: block;
-  width: 8px;
-  height: 8px;
-  opacity: 0.7;
-  margin: 4px;
-}
-.qp-relics-rarities > span.qp-relics-rarities-gold {
-  background-color: #998b2b;
-}
-.qp-relics-rarities > span.qp-relics-rarities-silver {
-  background-color: #818181;
-}
-.qp-relics-rarities > span.qp-relics-rarities-bronze {
-  background-color: #99532b;
 }
 </style>
