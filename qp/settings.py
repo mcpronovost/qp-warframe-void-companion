@@ -200,10 +200,10 @@ MANAGERS = [
 SERVER_EMAIL = "mcpronovostkurkiency@gmail.com"
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.mandrillapp.com"
-EMAIL_HOST_USER = "mcote@d-modules.com"
-EMAIL_HOST_PASSWORD = "yG5xY1l21FZ4UOOk-Hgd2A"
-EMAIL_PORT = 587
+EMAIL_HOST = os.getenv("EMAIL_HOST", "")
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+EMAIL_PORT = os.getenv("EMAIL_PORT", "")
 
 DEFAULT_FROM_EMAIL = "noreply@warframevoidcompanion.ca"
 DEFAULT_TO_EMAIL = "mcpronovostkurkiency@gmail.com"
